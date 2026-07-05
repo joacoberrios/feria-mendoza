@@ -9,6 +9,12 @@ export default async function Home() {
     <main className="mx-auto max-w-sm p-6">
       <h1 className="text-2xl font-semibold mb-6">Feria Mendoza</h1>
 
+      <div className="flex flex-col gap-2 text-sm mb-6">
+        <Link href="/productos" className="underline">
+          Catálogo
+        </Link>
+      </div>
+
       {!profile ? (
         <div className="flex flex-col gap-2 text-sm">
           <Link href="/login" className="underline">
@@ -26,6 +32,12 @@ export default async function Home() {
           </Link>
           <Link href="/verificacion" className="underline">
             Verificación de identidad
+          </Link>
+          <Link href="/publicar" className="underline">
+            Publicar producto
+          </Link>
+          <Link href="/mis-publicaciones" className="underline">
+            Mis publicaciones
           </Link>
           {profile.role === "admin" && (
             <Link href="/admin/verificaciones" className="underline">

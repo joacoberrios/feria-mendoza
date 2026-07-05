@@ -1,0 +1,2 @@
+export const MAX_PRODUCT_PHOTO_SIZE_BYTES = 8 * 1024 * 1024;
+export const MAX_PRODUCT_PHOTOS = 5;

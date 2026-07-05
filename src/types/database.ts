@@ -23,3 +23,42 @@ export type Profile = {
   dni_photo_url: string | null;
   created_at: string;
 };
+
+export type Category = {
+  id: number;
+  name: string;
+  active: boolean;
+};
+
+export type ProductCondition = "nuevo" | "como_nuevo" | "usado";
+
+export type ProductStatus =
+  | "draft"
+  | "pending_payment"
+  | "active"
+  | "paused"
+  | "sold"
+  | "removed";
+
+export type Product = {
+  id: number;
+  seller_id: string;
+  title: string;
+  description: string;
+  price: number;
+  category_id: number;
+  zone_id: number;
+  condition: ProductCondition;
+  status: ProductStatus;
+  plan_id: number | null;
+  created_at: string;
+};
+
+export type ProductPhoto = {
+  id: number;
+  product_id: number;
+  storage_path: string;
+  is_primary: boolean;
+  position: number;
+  created_at: string;
+};
