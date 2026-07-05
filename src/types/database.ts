@@ -62,3 +62,19 @@ export type ProductPhoto = {
   position: number;
   created_at: string;
 };
+
+export type PlanType = "commission" | "fixed_fee";
+export type PlanChannel = "web" | "instagram";
+
+export type PublicationPlan = {
+  id: number;
+  name: string;
+  type: PlanType;
+  price: number | null;
+  duration_days: number | null;
+  max_active_listings: number | null;
+  max_photos: number | null;
+  commission_percentage: number | null;
+  channel: PlanChannel;
+  active: boolean;
+};

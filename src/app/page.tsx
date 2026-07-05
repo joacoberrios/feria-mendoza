@@ -40,9 +40,14 @@ export default async function Home() {
             Mis publicaciones
           </Link>
           {profile.role === "admin" && (
-            <Link href="/admin/verificaciones" className="underline">
-              Panel admin: verificaciones
-            </Link>
+            <>
+              <Link href="/admin/verificaciones" className="underline">
+                Panel admin: verificaciones
+              </Link>
+              <Link href="/admin/planes" className="underline">
+                Panel admin: planes
+              </Link>
+            </>
           )}
           <form action={signOut}>
             <button type="submit" className="mt-4 underline">

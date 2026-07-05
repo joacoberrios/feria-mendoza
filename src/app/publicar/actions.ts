@@ -56,10 +56,17 @@ export async function createProduct(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Fase 2: todavía no existe el flujo de pago (Fase 3), así que el
-  // producto pasa directo a 'active' para poder probar el catálogo. En
-  // Fase 3 esto se reemplaza: se crea en 'pending_payment' y el webhook de
-  // Mercado Pago recién lo pasa a 'active' cuando se confirma el pago.
+  // El canal Web/App no cobra por publicar (100% comisión, cobrada recién
+  // en Fase 4 vía split de Mercado Pago al momento de la venta), así que
+  // el producto pasa directo a 'active' y queda asociado al plan de
+  // comisión web.
+  const { data: webPlan } = await supabase
+    .from("publication_plans")
+    .select("id")
+    .eq("channel", "web")
+    .eq("active", true)
+    .maybeSingle();
+
   const { data: product, error: insertError } = await supabase
     .from("products")
     .insert({
@@ -71,6 +78,7 @@ export async function createProduct(formData: FormData) {
       zone_id: zoneId,
       condition,
       status: "active",
+      plan_id: webPlan?.id ?? null,
     })
     .select("id")
     .single();
