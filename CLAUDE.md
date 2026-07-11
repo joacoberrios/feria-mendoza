@@ -206,3 +206,41 @@ Pensado para que Claude Code lo ejecute de forma incremental: cada fase entrega 
 - **Co-fundador:** desarrollo, arquitectura técnica
 - **Claude:** arquitecto de software / PM de apoyo
 - *A futuro:* posibilidad de crear agentes especializados (CMO, CEO, CTO) para ordenar la toma de decisiones a medida que el proyecto crezca.
+
+---
+
+## 11. Troubleshooting (lecciones del despliegue inicial)
+
+Todo esto surgió de una sesión larga de debugging del primer deploy a Vercel. Se deja documentado para no volver a perder tiempo con los mismos síntomas.
+
+### "404 NOT_FOUND" en todas las rutas de producción (pero el build compila bien)
+- **Causa:** el **Framework Preset del proyecto en Vercel** estaba en "Other" en vez de "Next.js" (Project Settings → General → Framework Settings). Con "Other", Vercel sirve el deploy como sitio estático genérico (buscando archivos en `public/`) e ignora por completo el runtime de Next.js, sin importar que el build local o de Vercel haya compilado perfecto.
+- **Fix:** Framework Preset → **Next.js**, y redeploy. Si esto está mal configurado, ningún otro fix de código lo va a solucionar — chequearlo primero ante cualquier 404 masivo en producción.
+
+### `middleware.ts` se ignora en silencio (no corre, sin error ni warning)
+- **Causa:** el proyecto usa estructura `src/app`. Next.js requiere que `middleware.ts` esté en **`src/middleware.ts`**, no en la raíz del proyecto, cuando existe una carpeta `src/`. En la raíz, se compila y se invoca sin ningún aviso — el bug es puramente silencioso.
+- **Fix:** siempre poner `middleware.ts` dentro de `src/`. Confirmar que corre buscando la línea `✓ Compiled /middleware` en el log de `next dev`/`next build`.
+
+### Por qué el proyecto quedó en Next 15.5.20 y no en Next 16
+- Next 16.0 renombró `middleware` a `proxy` (`proxy.ts`), y **el `proxy` corre exclusivamente en Node.js runtime, sin la opción de Edge**. Al migrar a `proxy.ts`, el builder de Vercel de ese momento no generaba ninguna función para las rutas de la app (deploy "exitoso" pero 404 en todo) — soporte incompleto de esta convención tan nueva en el pipeline de deploy.
+- **Decisión:** downgrade a **Next 15.5.20** (última estable de la serie 15.x), donde `middleware.ts` sigue siendo la única convención y soporta Node.js runtime de forma estable (`export const config = { runtime: "nodejs", matcher: [...] }`), evitando tanto el crash de Edge Runtime (`__dirname is not defined`, ver más abajo) como el problema de deploy de `proxy.ts`.
+- Si en el futuro se evalúa volver a Next 16+, primero confirmar que el builder de Vercel ya soporta `proxy.ts` correctamente (probar en un deploy de prueba antes de migrar el proyecto real).
+
+### `ReferenceError: __dirname is not defined` en el middleware (Edge Runtime)
+- **Causa:** `__dirname` es una variable de Node.js que no existe en Edge Runtime. Pasaba porque `middleware.ts` corría en Edge por defecto (comportamiento legado de Next).
+- **Fix:** ya cubierto por el punto anterior — Node.js runtime explícito en el `config` del middleware evita todo el Edge Runtime.
+
+### El registro no manda el email de confirmación / dice `"{}"` como error
+- **Causa raíz real (no era código):** el remitente configurado en el SMTP de Supabase (Authentication → Emails → SMTP Settings) usa el dominio de pruebas de Resend, `onboarding@resend.dev`. Ese dominio **solo puede mandar emails a la dirección con la que te registraste en Resend** — cualquier otro destinatario se rechaza (403 en los logs de Resend), y Supabase envuelve ese rechazo en un genérico `"Error sending confirmation email"` (500) que el cliente de Auth (`@supabase/auth-js`) termina mostrando como el string literal `"{}"` en vez del mensaje real.
+- **Para producción real:** hay que verificar un dominio propio en resend.com/domains y cambiar el "Sender email" en Supabase a una dirección de ese dominio (ej. `noreply@tudominio.com`). Sin esto, ningún usuario real va a poder confirmar su cuenta.
+- **Efecto secundario a tener en cuenta al debuggear:** si probás el signup con tu propia dirección de Resend y un usuario con ese email ya existe en `auth.users` (aunque sea de una prueba vieja), Supabase devuelve un 200 "éxito" falso sin mandar ningún email nuevo (protección anti-enumeración de cuentas) — hay que borrar el usuario viejo de Authentication → Users antes de reintentar para que sea un signup genuinamente nuevo.
+- **Fix de código ya aplicado:** el mensaje de error nunca debe mostrarse crudo — si `error.message` viene vacío o es literalmente `"{}"`, mostrar un mensaje genérico y loguear el error completo (con `Object.getOwnPropertyNames`, que sí captura `.message` aunque no sea enumerable) del lado del servidor para diagnosticar futuros casos desde los logs de Vercel.
+
+### Rate limit de reenvío de confirmación (Supabase)
+- Supabase exige un intervalo mínimo de **60 segundos** entre reenvíos de email de confirmación para el mismo usuario. Si se prueba el botón de "reenviar" muy seguido, va a fallar silenciosamente o devolver error — no es un bug, hay que esperar el intervalo.
+- El servicio de email *default* de Supabase (sin SMTP propio) tiene un límite mucho más bajo (~3-4 emails/hora en total) — motivo original por el que se configuró SMTP propio con Resend.
+
+### Site URL de Supabase apuntando a localhost
+- **Síntoma:** los logs de Auth de Supabase muestran `referer: http://localhost:3000` aunque el request real venga del dominio de producción.
+- **Causa:** Authentication → URL Configuration → **Site URL** queda en `http://localhost:3000` por defecto al crear el proyecto, y GoTrue lo usa como fallback si la URL de `emailRedirectTo` que manda la app no está en la lista de "Redirect URLs" permitidas — sin importar que el código arme bien la URL (ver `src/lib/site-url.ts`).
+- **Fix:** en el dashboard de Supabase, actualizar **Site URL** al dominio real de producción, y agregar ese dominio (con wildcard, ej. `https://feria-mendoza.vercel.app/**`) a **Redirect URLs**.
