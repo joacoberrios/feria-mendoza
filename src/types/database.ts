@@ -78,3 +78,24 @@ export type PublicationPlan = {
   channel: PlanChannel;
   active: boolean;
 };
+
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "delivered"
+  | "disputed"
+  | "refunded"
+  | "resolved";
+
+export type Order = {
+  id: number;
+  product_id: number;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  commission_amount: number;
+  mp_payment_id: string | null;
+  mp_preference_id: string | null;
+  status: OrderStatus;
+  created_at: string;
+};
