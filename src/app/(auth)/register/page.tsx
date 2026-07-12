@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { signUp } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function RegisterPage({
   searchParams,
@@ -10,31 +13,25 @@ export default async function RegisterPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">Crear cuenta</h1>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      <form action={signUp} className="flex flex-col gap-3">
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          required
-          className="border rounded px-3 py-2"
-        />
-        <input
+      <h1 className="mb-4 font-display text-xl font-semibold">Crear cuenta</h1>
+      {error && <Alert variant="err">{error}</Alert>}
+      <form action={signUp} className="flex flex-col gap-1">
+        <TextField name="email" type="email" label="Email" required />
+        <TextField
           name="password"
           type="password"
-          placeholder="Contraseña"
-          required
+          label="Contraseña"
           minLength={6}
-          className="border rounded px-3 py-2"
+          hint="Mínimo 6 caracteres."
+          required
         />
-        <button type="submit" className="bg-black text-white rounded px-3 py-2">
+        <Button type="submit" className="mt-2 w-full">
           Registrarme
-        </button>
+        </Button>
       </form>
-      <p className="mt-4 text-sm">
+      <p className="mt-4 text-sm text-ink-soft">
         ¿Ya tenés cuenta?{" "}
-        <Link href="/login" className="underline">
+        <Link href="/login" className="font-semibold text-azul-deep underline">
           Iniciar sesión
         </Link>
       </p>

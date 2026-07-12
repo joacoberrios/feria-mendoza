@@ -3,8 +3,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
-import { DniPhotoInput } from "@/components/auth/DniPhotoInput";
+import { MAX_DNI_PHOTO_SIZE_BYTES } from "@/lib/dni-photo";
 import { uploadDniPhoto } from "./actions";
+import { FileField } from "@/components/ui/FileField";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function VerificationPage({
   searchParams,
@@ -26,17 +29,19 @@ export default async function VerificationPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">Verificación de identidad</h1>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      {uploaded && (
-        <p className="mb-4 text-sm text-green-600">
-          Foto subida, queda pendiente de revisión.
-        </p>
-      )}
+      <h1 className="mb-4 font-display text-xl font-semibold">Verificación de identidad</h1>
+      {error && <Alert variant="err">{error}</Alert>}
+      {uploaded && <Alert variant="ok">Foto subida, queda pendiente de revisión.</Alert>}
 
-      <p className="mb-4 text-sm">
-        Estado actual: <strong>{profile.verification_status}</strong>
-      </p>
+      {profile.verification_status === "approved" && (
+        <Alert variant="ok">Tu identidad ya está verificada.</Alert>
+      )}
+      {profile.verification_status === "pending" && (
+        <Alert variant="info">Tu foto está en revisión.</Alert>
+      )}
+      {profile.verification_status === "rejected" && (
+        <Alert variant="err">Tu verificación fue rechazada. Volvé a subir tu foto de DNI.</Alert>
+      )}
 
       {previewUrl && (
         <Image
@@ -44,23 +49,28 @@ export default async function VerificationPage({
           alt="Foto de DNI cargada"
           width={320}
           height={220}
-          className="mb-4 rounded border object-cover"
+          className="mb-4 rounded-md border border-border object-cover"
         />
       )}
 
-      {profile.verification_status === "approved" ? (
-        <p className="text-sm">Tu identidad ya está verificada.</p>
-      ) : (
-        <form action={uploadDniPhoto} className="flex flex-col gap-3">
-          <DniPhotoInput />
-          <button type="submit" className="bg-black text-white rounded px-3 py-2">
+      {profile.verification_status !== "approved" && (
+        <form action={uploadDniPhoto} className="flex flex-col gap-1">
+          <FileField
+            name="dni_photo"
+            label="Foto de tu DNI"
+            hint={`Formato JPG o PNG, hasta ${(MAX_DNI_PHOTO_SIZE_BYTES / 1024 / 1024).toFixed(0)}MB.`}
+            accept="image/*"
+            maxSizeBytes={MAX_DNI_PHOTO_SIZE_BYTES}
+            required
+          />
+          <Button type="submit" className="mt-2 w-full">
             {profile.dni_photo_url ? "Volver a subir" : "Subir foto de DNI"}
-          </button>
+          </Button>
         </form>
       )}
 
-      <p className="mt-4 text-sm">
-        <Link href="/perfil" className="underline">
+      <p className="mt-4 text-sm text-ink-soft">
+        <Link href="/perfil" className="font-semibold text-azul-deep underline">
           Volver a mi perfil
         </Link>
       </p>

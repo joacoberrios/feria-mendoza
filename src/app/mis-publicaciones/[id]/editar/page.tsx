@@ -1,8 +1,15 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
+import { CONDITION_LABELS, CONDITION_TONES } from "@/lib/product-labels";
 import type { Product } from "@/types/database";
 import { updateProduct } from "./actions";
+import { TextField } from "@/components/ui/TextField";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
+import { ChipRadioGroup } from "@/components/ui/Chip";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function EditProductPage({
   params,
@@ -31,91 +38,62 @@ export default async function EditProductPage({
     supabase.from("zones").select("id, name").eq("active", true).order("name"),
   ]);
 
+  const conditionOptions = Object.entries(CONDITION_LABELS).map(([value, label]) => ({
+    value,
+    label,
+    tone: CONDITION_TONES[value as keyof typeof CONDITION_TONES],
+  }));
+
   return (
     <main className="mx-auto max-w-lg p-6">
-      <h1 className="text-xl font-semibold mb-4">Editar producto</h1>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      {saved && <p className="mb-4 text-sm text-green-600">Cambios guardados.</p>}
+      <h1 className="mb-4 font-display text-xl font-semibold">Editar producto</h1>
+      {error && <Alert variant="err">{error}</Alert>}
+      {saved && <Alert variant="ok">Cambios guardados.</Alert>}
 
-      <form action={updateProduct} className="flex flex-col gap-3">
+      <form action={updateProduct} className="flex flex-col gap-1">
         <input type="hidden" name="product_id" value={product.id} />
-        <label className="text-sm">
-          Título
-          <input
-            name="title"
-            defaultValue={product.title}
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Descripción
-          <textarea
-            name="description"
-            defaultValue={product.description}
-            required
-            rows={4}
-            className="mt-1 w-full border rounded px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Precio
-          <input
-            name="price"
-            type="number"
-            min="0"
-            step="0.01"
-            defaultValue={product.price}
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Categoría
-          <select
-            name="category_id"
-            defaultValue={product.category_id}
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          >
-            {categories?.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          Zona
-          <select
-            name="zone_id"
-            defaultValue={product.zone_id}
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          >
-            {zones?.map((z) => (
-              <option key={z.id} value={z.id}>
-                {z.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          Condición
-          <select
-            name="condition"
-            defaultValue={product.condition}
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          >
-            <option value="nuevo">Nuevo</option>
-            <option value="como_nuevo">Como nuevo</option>
-            <option value="usado">Usado</option>
-          </select>
-        </label>
-        <button type="submit" className="bg-black text-white rounded px-3 py-2">
+        <TextField name="title" label="Título" defaultValue={product.title} required />
+        <Textarea
+          name="description"
+          label="Descripción"
+          defaultValue={product.description}
+          rows={4}
+          required
+        />
+        <TextField
+          name="price"
+          type="number"
+          label="Precio"
+          min="0"
+          step="0.01"
+          defaultValue={product.price}
+          required
+        />
+        <Select name="category_id" label="Categoría" defaultValue={product.category_id} required>
+          {categories?.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </Select>
+        <Select name="zone_id" label="Zona" defaultValue={product.zone_id} required>
+          {zones?.map((z) => (
+            <option key={z.id} value={z.id}>
+              {z.name}
+            </option>
+          ))}
+        </Select>
+        <ChipRadioGroup
+          name="condition"
+          groupLabel="Condición"
+          options={conditionOptions}
+          defaultValue={product.condition}
+          required
+        />
+
+        <Button type="submit" className="mt-2 w-full">
           Guardar cambios
-        </button>
+        </Button>
       </form>
     </main>
   );

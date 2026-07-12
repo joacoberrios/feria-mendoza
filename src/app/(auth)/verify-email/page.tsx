@@ -1,4 +1,7 @@
 import { resendConfirmation } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function VerifyEmailPage({
   searchParams,
@@ -9,28 +12,17 @@ export default async function VerifyEmailPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">Revisá tu correo</h1>
-      <p className="text-sm mb-4">
-        Te enviamos un link de confirmación{email ? ` a ${email}` : ""}. Tenés
-        que confirmarlo antes de poder iniciar sesión.
+      <h1 className="mb-4 font-display text-xl font-semibold">Revisá tu correo</h1>
+      <p className="mb-4 text-sm text-ink-soft">
+        Te enviamos un link de confirmación{email ? ` a ${email}` : ""}. Tenés que confirmarlo
+        antes de poder iniciar sesión.
       </p>
-      {sent && (
-        <p className="mb-4 text-sm text-green-600">
-          Te reenviamos el email de confirmación.
-        </p>
-      )}
-      <form action={resendConfirmation} className="flex flex-col gap-3">
-        <input
-          name="email"
-          type="email"
-          placeholder="Tu email"
-          defaultValue={email ?? ""}
-          required
-          className="border rounded px-3 py-2"
-        />
-        <button type="submit" className="border rounded px-3 py-2">
+      {sent && <Alert variant="ok">Te reenviamos el email de confirmación.</Alert>}
+      <form action={resendConfirmation} className="flex flex-col gap-1">
+        <TextField name="email" type="email" label="Tu email" defaultValue={email ?? ""} required />
+        <Button type="submit" variant="secondary" className="mt-2 w-full">
           Reenviar email de confirmación
-        </button>
+        </Button>
       </form>
     </main>
   );

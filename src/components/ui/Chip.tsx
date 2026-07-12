@@ -34,6 +34,54 @@ const PEER_CHECKED_CLASSES: Record<ChipTone, string> = {
   line: "peer-checked:border-ink-soft",
 };
 
+export type ChipRadioOption = { value: string; label: string; tone?: ChipTone };
+
+// Selector de una sola opción con estilo chip, para formularios (a
+// diferencia de FilterChipGroup no tiene opción "Todas": siempre hay un
+// valor elegido) — ver sección 10 de docs/design-system.html.
+export function ChipRadioGroup({
+  name,
+  groupLabel,
+  options,
+  defaultValue,
+  required,
+}: {
+  name: string;
+  groupLabel: string;
+  options: ChipRadioOption[];
+  defaultValue?: string;
+  required?: boolean;
+}) {
+  return (
+    <fieldset className="m-0 mb-[18px] border-0 p-0">
+      <legend className="mb-2 text-sm font-semibold text-ink">{groupLabel}</legend>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const checked = defaultValue === opt.value;
+          const tone = opt.tone ?? "line";
+          return (
+            <label key={opt.value} className="cursor-pointer">
+              <input
+                type="radio"
+                name={name}
+                value={opt.value}
+                defaultChecked={checked}
+                required={required}
+                className="peer sr-only"
+              />
+              <span
+                className={`inline-flex items-center rounded-pill border border-border bg-surface px-3.5 py-1.5 text-[.82rem] font-medium text-ink-soft transition-colors peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-azul-deep peer-focus-visible:outline-offset-2 ${PEER_CHECKED_CLASSES[tone]}`}
+              >
+                {opt.label}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
 export type FilterChipOption = { value: string; label: string };
 
 export type FilterChipGroupProps = {

@@ -1,8 +1,16 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
-import { MAX_PRODUCT_PHOTOS } from "@/lib/product-photo";
+import { MAX_PRODUCT_PHOTOS, MAX_PRODUCT_PHOTO_SIZE_BYTES } from "@/lib/product-photo";
+import { CONDITION_LABELS, CONDITION_TONES } from "@/lib/product-labels";
 import { createProduct } from "./actions";
+import { TextField } from "@/components/ui/TextField";
+import { Textarea } from "@/components/ui/Textarea";
+import { Select } from "@/components/ui/Select";
+import { FileField } from "@/components/ui/FileField";
+import { ChipRadioGroup } from "@/components/ui/Chip";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function PublishProductPage({
   searchParams,
@@ -26,110 +34,71 @@ export default async function PublishProductPage({
   ]);
 
   const photoSlots = Array.from({ length: MAX_PRODUCT_PHOTOS }, (_, i) => i + 1);
+  const conditionOptions = Object.entries(CONDITION_LABELS).map(([value, label]) => ({
+    value,
+    label,
+    tone: CONDITION_TONES[value as keyof typeof CONDITION_TONES],
+  }));
 
   return (
     <main className="mx-auto max-w-lg p-6">
-      <h1 className="text-xl font-semibold mb-4">Publicar producto</h1>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+      <h1 className="mb-4 font-display text-xl font-semibold">Publicar producto</h1>
+      {error && <Alert variant="err">{error}</Alert>}
 
-      <form action={createProduct} className="flex flex-col gap-3">
-        <label className="text-sm">
-          Título
-          <input name="title" required className="mt-1 w-full border rounded px-3 py-2" />
-        </label>
-        <label className="text-sm">
-          Descripción
-          <textarea
-            name="description"
-            required
-            rows={4}
-            className="mt-1 w-full border rounded px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Precio
-          <input
-            name="price"
-            type="number"
-            min="0"
-            step="0.01"
-            required
-            className="mt-1 w-full border rounded px-3 py-2"
-          />
-        </label>
-        <label className="text-sm">
-          Categoría
-          <select name="category_id" required className="mt-1 w-full border rounded px-3 py-2">
-            <option value="" disabled>
-              Elegí una categoría
+      <form action={createProduct} className="flex flex-col gap-1">
+        <TextField name="title" label="Título" required />
+        <Textarea name="description" label="Descripción" rows={4} required />
+        <TextField name="price" type="number" label="Precio" min="0" step="0.01" required />
+        <Select name="category_id" label="Categoría" defaultValue="" required>
+          <option value="" disabled>
+            Elegí una categoría
+          </option>
+          {categories?.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
             </option>
-            {categories?.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          Zona
-          <select name="zone_id" required className="mt-1 w-full border rounded px-3 py-2">
-            <option value="" disabled>
-              Elegí tu zona
+          ))}
+        </Select>
+        <Select name="zone_id" label="Zona" defaultValue="" required>
+          <option value="" disabled>
+            Elegí tu zona
+          </option>
+          {zones?.map((z) => (
+            <option key={z.id} value={z.id}>
+              {z.name}
             </option>
-            {zones?.map((z) => (
-              <option key={z.id} value={z.id}>
-                {z.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm">
-          Condición
-          <select name="condition" required className="mt-1 w-full border rounded px-3 py-2">
-            <option value="" disabled>
-              Elegí la condición
-            </option>
-            <option value="nuevo">Nuevo</option>
-            <option value="como_nuevo">Como nuevo</option>
-            <option value="usado">Usado</option>
-          </select>
-        </label>
+          ))}
+        </Select>
+        <ChipRadioGroup name="condition" groupLabel="Condición" options={conditionOptions} required />
 
-        <fieldset className="border rounded p-3">
-          <legend className="text-sm px-1">Fotos (hasta {MAX_PRODUCT_PHOTOS})</legend>
-          <div className="flex flex-col gap-2">
+        <fieldset className="mb-[18px] max-w-[420px] rounded-md border border-border p-3.5">
+          <legend className="px-1 text-sm font-semibold text-ink">
+            Fotos (hasta {MAX_PRODUCT_PHOTOS})
+          </legend>
+          <div className="flex flex-col gap-1">
             {photoSlots.map((slot) => (
-              <label key={slot} className="text-sm">
-                Foto {slot} {slot === 1 ? "(obligatoria)" : "(opcional)"}
-                <input
-                  type="file"
-                  name={`photo_${slot}`}
-                  accept="image/*"
-                  required={slot === 1}
-                  className="mt-1 block"
-                />
-              </label>
+              <FileField
+                key={slot}
+                name={`photo_${slot}`}
+                label={`Foto ${slot} ${slot === 1 ? "(obligatoria)" : "(opcional)"}`}
+                hint={`Hasta ${(MAX_PRODUCT_PHOTO_SIZE_BYTES / 1024 / 1024).toFixed(0)}MB.`}
+                required={slot === 1}
+                maxSizeBytes={MAX_PRODUCT_PHOTO_SIZE_BYTES}
+              />
             ))}
           </div>
-          <label className="text-sm mt-3 block">
-            Foto principal
-            <select
-              name="primary_slot"
-              defaultValue="1"
-              className="mt-1 w-full border rounded px-3 py-2"
-            >
-              {photoSlots.map((slot) => (
-                <option key={slot} value={slot}>
-                  Foto {slot}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select name="primary_slot" label="Foto principal" defaultValue="1">
+            {photoSlots.map((slot) => (
+              <option key={slot} value={slot}>
+                Foto {slot}
+              </option>
+            ))}
+          </Select>
         </fieldset>
 
-        <button type="submit" className="bg-black text-white rounded px-3 py-2">
+        <Button type="submit" className="mt-2 w-full">
           Publicar
-        </button>
+        </Button>
       </form>
     </main>
   );
