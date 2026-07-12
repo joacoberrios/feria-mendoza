@@ -81,19 +81,17 @@ export default async function ProfilePage({
       <div className="mt-6 border-t pt-6">
         <h2 className="text-sm font-medium mb-2">Mercado Pago</h2>
         {mp_error && <p className="mb-2 text-sm text-red-600">{mp_error}</p>}
-        {mp_connected && (
-          <p className="mb-2 text-sm text-green-600">Cuenta de Mercado Pago conectada.</p>
-        )}
         {mpConnected ? (
           <p className="text-sm">
-            ✅ Ya conectaste tu cuenta de Mercado Pago — podés recibir pagos.
+            {mp_connected ? "✅ Conectaste tu cuenta de Mercado Pago." : "✅ Tu cuenta de Mercado Pago está conectada."}{" "}
+            Si publicás productos, vas a poder recibir los pagos de tus ventas.
           </p>
         ) : (
           <>
             <p className="text-sm text-gray-600 mb-2">
-              Necesitás conectar tu cuenta de Mercado Pago antes de poder cobrar una
-              venta. Podés publicar productos igual, pero nadie va a poder comprarlos
-              hasta que conectes tu cuenta.
+              Esto solo hace falta si vas a <strong>vender</strong>: conectá tu cuenta de
+              Mercado Pago para poder cobrar cuando alguien te compre algo. Si solo vas a
+              comprar, no necesitás hacer nada acá.
             </p>
             <form action={connectMercadoPago}>
               <button type="submit" className="bg-black text-white rounded px-3 py-2 text-sm">
