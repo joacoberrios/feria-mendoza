@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Alert } from "@/components/ui/Alert";
+import { ButtonLink } from "@/components/ui/Button";
 
 export default async function CheckoutPendientePage({
   searchParams,
@@ -9,17 +10,12 @@ export default async function CheckoutPendientePage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">Pago pendiente</h1>
-      <p className="text-sm mb-4">
-        Tu pago{order ? ` de la orden #${order}` : ""} quedó pendiente de confirmación
-        (por ejemplo, si pagaste con efectivo o transferencia). Te avisamos apenas se
-        confirme.
-      </p>
-      <p className="text-sm">
-        <Link href="/productos" className="underline">
-          Volver al catálogo
-        </Link>
-      </p>
+      <h1 className="mb-4 font-display text-xl font-semibold">Pago pendiente</h1>
+      <Alert variant="info">
+        Tu pago{order ? ` de la orden #${order}` : ""} quedó pendiente de confirmación (por
+        ejemplo, si pagaste con efectivo o transferencia). Te avisamos apenas se confirme.
+      </Alert>
+      <ButtonLink href="/productos">Volver al catálogo</ButtonLink>
     </main>
   );
 }

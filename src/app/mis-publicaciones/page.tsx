@@ -1,11 +1,14 @@
 import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { getPublicStorageUrl } from "@/lib/supabase/storage";
-import { STATUS_LABELS } from "@/lib/product-labels";
+import { STATUS_LABELS, STATUS_TONES } from "@/lib/product-labels";
 import { pauseProduct, reactivateProduct, markAsSold, removeProduct } from "./actions";
+import { Chip } from "@/components/ui/Chip";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { ConfirmButton } from "@/components/ui/ConfirmButton";
+import { Alert } from "@/components/ui/Alert";
 
 type ProductRow = {
   id: number;
@@ -34,16 +37,17 @@ export default async function MyProductsPage({
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-xl font-semibold mb-6">Mis publicaciones</h1>
-      {created && <p className="mb-4 text-sm text-green-600">Producto publicado.</p>}
-      <p className="mb-4 text-sm">
-        <Link href="/publicar" className="underline">
+      <h1 className="mb-6 font-display text-xl font-semibold">Mis publicaciones</h1>
+      {created && <Alert variant="ok">Producto publicado.</Alert>}
+
+      <div className="mb-4">
+        <ButtonLink href="/publicar" size="sm">
           + Publicar producto
-        </Link>
-      </p>
+        </ButtonLink>
+      </div>
 
       {(!products || products.length === 0) && (
-        <p className="text-sm">Todavía no publicaste nada.</p>
+        <p className="text-sm text-ink-soft">Todavía no publicaste nada.</p>
       )}
 
       <ul className="flex flex-col gap-4">
@@ -52,58 +56,67 @@ export default async function MyProductsPage({
             p.product_photos.find((ph) => ph.is_primary) ?? p.product_photos[0];
 
           return (
-            <li key={p.id} className="border rounded p-4 flex gap-4 items-center">
+            <li
+              key={p.id}
+              className="flex items-center gap-4 rounded-lg border border-border bg-surface p-4 shadow-sm"
+            >
               {primaryPhoto ? (
                 <Image
                   src={getPublicStorageUrl("product-photos", primaryPhoto.storage_path)}
                   alt={p.title}
                   width={96}
                   height={96}
-                  className="rounded border object-cover"
+                  className="rounded-md border border-border object-cover"
                 />
               ) : (
-                <div className="w-24 h-24 flex items-center justify-center text-xs text-gray-500 border rounded">
+                <div className="flex h-24 w-24 items-center justify-center rounded-md border border-border text-xs text-ink-soft">
                   Sin foto
                 </div>
               )}
               <div className="flex-1">
-                <p className="font-medium">{p.title}</p>
-                <p className="text-sm text-gray-600">
-                  ${p.price} — {STATUS_LABELS[p.status] ?? p.status}
+                <p className="font-semibold text-ink">{p.title}</p>
+                <p className="mt-0.5 font-display text-base font-bold text-terracota-deep">
+                  ${p.price.toLocaleString("es-AR")}
                 </p>
-                <div className="mt-2 flex flex-wrap gap-3 text-sm">
-                  <Link href={`/mis-publicaciones/${p.id}/editar`} className="underline">
+                <div className="mt-1.5">
+                  <Chip tone={STATUS_TONES[p.status]}>{STATUS_LABELS[p.status] ?? p.status}</Chip>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <ButtonLink href={`/mis-publicaciones/${p.id}/editar`} variant="ghost" size="sm">
                     Editar
-                  </Link>
+                  </ButtonLink>
                   {p.status === "active" && (
                     <form action={pauseProduct}>
                       <input type="hidden" name="product_id" value={p.id} />
-                      <button type="submit" className="underline">
+                      <Button type="submit" variant="ghost" size="sm">
                         Pausar
-                      </button>
+                      </Button>
                     </form>
                   )}
                   {p.status === "paused" && (
                     <form action={reactivateProduct}>
                       <input type="hidden" name="product_id" value={p.id} />
-                      <button type="submit" className="underline">
+                      <Button type="submit" variant="secondary" size="sm">
                         Reactivar
-                      </button>
+                      </Button>
                     </form>
                   )}
                   {(p.status === "active" || p.status === "paused") && (
                     <>
                       <form action={markAsSold}>
                         <input type="hidden" name="product_id" value={p.id} />
-                        <button type="submit" className="underline">
+                        <Button type="submit" variant="secondary" size="sm">
                           Marcar vendido
-                        </button>
+                        </Button>
                       </form>
                       <form action={removeProduct}>
                         <input type="hidden" name="product_id" value={p.id} />
-                        <button type="submit" className="underline text-red-600">
+                        <ConfirmButton
+                          confirmMessage={`¿Seguro que querés eliminar "${p.title}"? No se puede deshacer.`}
+                          size="sm"
+                        >
                           Eliminar
-                        </button>
+                        </ConfirmButton>
                       </form>
                     </>
                   )}

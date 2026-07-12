@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type ChipTone = "terra" | "azul" | "menta" | "lav" | "ciruela" | "line";
+export type ChipTone = "terra" | "azul" | "menta" | "lav" | "ciruela" | "line" | "carmin";
 
 const TONE_CLASSES: Record<ChipTone, string> = {
   terra: "bg-[#f6e3d8] text-terracota-deep",
@@ -9,6 +9,10 @@ const TONE_CLASSES: Record<ChipTone, string> = {
   lav: "bg-lavanda text-ink",
   ciruela: "bg-[#ece5f3] text-ciruela",
   line: "bg-surface border border-border text-ink-soft",
+  // Mismo par de colores que Alert variant="err" (sección 11), aplicado a
+  // un chip — para estados "negativos" que no son un error de formulario
+  // (ej. producto eliminado en mis-publicaciones).
+  carmin: "bg-[#f6e2e2] text-carmin",
 };
 
 // Chip estático de solo lectura — ver sección 10 de docs/design-system.html.
@@ -32,6 +36,7 @@ const PEER_CHECKED_CLASSES: Record<ChipTone, string> = {
   lav: "peer-checked:border-transparent peer-checked:bg-lavanda peer-checked:text-ink",
   ciruela: "peer-checked:border-transparent peer-checked:bg-[#ece5f3] peer-checked:text-ciruela",
   line: "peer-checked:border-ink-soft",
+  carmin: "peer-checked:border-transparent peer-checked:bg-[#f6e2e2] peer-checked:text-carmin",
 };
 
 export type ChipRadioOption = { value: string; label: string; tone?: ChipTone };

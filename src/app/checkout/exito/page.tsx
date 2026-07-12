@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { Alert } from "@/components/ui/Alert";
+import { ButtonLink } from "@/components/ui/Button";
 
 export default async function CheckoutExitoPage({
   searchParams,
@@ -15,21 +16,17 @@ export default async function CheckoutExitoPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">¡Pago recibido!</h1>
-      <p className="text-sm mb-4">
-        Tu pago se procesó correctamente. En unos segundos vas a ver reflejado el
-        cambio de estado del producto.
-      </p>
+      <h1 className="mb-4 font-display text-xl font-semibold">¡Pago recibido!</h1>
+      <Alert variant="ok">
+        Tu pago se procesó correctamente. En unos segundos vas a ver reflejado el cambio de
+        estado del producto.
+      </Alert>
       {order && (
-        <p className="text-sm text-gray-600">
-          Orden #{order.id} — estado: <strong>{order.status}</strong>
+        <p className="mb-4 text-sm text-ink-soft">
+          Orden #{order.id} — estado: <strong className="text-ink">{order.status}</strong>
         </p>
       )}
-      <p className="mt-4 text-sm">
-        <Link href="/productos" className="underline">
-          Volver al catálogo
-        </Link>
-      </p>
+      <ButtonLink href="/productos">Volver al catálogo</ButtonLink>
     </main>
   );
 }

@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 import Link, { type LinkProps } from "next/link";
 import type { AnchorHTMLAttributes } from "react";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "base" | "lg";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -12,6 +12,12 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
     "bg-azul text-white hover:bg-azul-deep disabled:bg-border disabled:text-[#9a95a0]",
   ghost:
     "bg-transparent text-terracota-deep border-2 border-terracota-deep hover:bg-terracota-deep/8 disabled:border-border disabled:text-[#9a95a0] disabled:hover:bg-transparent",
+  // No está definida en docs/design-system.html (la sección 06 solo cubre
+  // primary/secondary/ghost) — se suma acá reusando --carmin, que el
+  // design system ya reserva para error/alerta, para acciones
+  // destructivas (ej. "Eliminar" en mis-publicaciones).
+  danger:
+    "bg-carmin text-white shadow-sm hover:bg-[#932e2e] hover:shadow-md disabled:bg-border disabled:text-[#9a95a0] disabled:shadow-none",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -20,7 +26,7 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
   lg: "text-lg px-[30px] py-[17px] min-h-[52px]",
 };
 
-function buttonClasses(variant: ButtonVariant, size: ButtonSize, className: string) {
+export function buttonClasses(variant: ButtonVariant, size: ButtonSize, className: string) {
   return `inline-flex items-center justify-center gap-2 rounded-pill font-semibold transition-[background,box-shadow,transform] duration-150 ease-out active:translate-y-px disabled:cursor-not-allowed disabled:active:translate-y-0 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`;
 }
 

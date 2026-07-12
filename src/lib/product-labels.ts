@@ -23,3 +23,13 @@ export const STATUS_LABELS: Record<ProductStatus, string> = {
   sold: "Vendido",
   removed: "Eliminado",
 };
+
+// Tono de badge por estado de publicación — ver mis-publicaciones.
+export const STATUS_TONES: Record<ProductStatus, ChipTone> = {
+  draft: "line",
+  pending_payment: "terra",
+  active: "menta",
+  paused: "lav",
+  sold: "azul",
+  removed: "carmin",
+};
