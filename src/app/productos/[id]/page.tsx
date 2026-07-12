@@ -2,10 +2,13 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getPublicStorageUrl } from "@/lib/supabase/storage";
-import { CONDITION_LABELS } from "@/lib/product-labels";
+import { CONDITION_LABELS, CONDITION_TONES } from "@/lib/product-labels";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { isSellerMpConnected } from "@/lib/mercadopago/tokens";
 import { createCheckout } from "./actions";
+import { Chip } from "@/components/ui/Chip";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 type ProductDetailRow = {
   id: number;
@@ -51,52 +54,60 @@ export default async function ProductDetailPage({
   const sellerConnected = profile && !isOwner ? await isSellerMpConnected(product.seller_id) : false;
 
   return (
-    <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-xl font-semibold mb-2">{product.title}</h1>
-      <p className="text-lg font-medium mb-4">${product.price}</p>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+    <main className="mx-auto max-w-2xl px-6 py-10">
+      {error && <Alert variant="err">{error}</Alert>}
 
       {photos.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+        <div className="mb-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {photos.map((photo) => (
-            <Image
+            <div
               key={photo.storage_path}
-              src={getPublicStorageUrl("product-photos", photo.storage_path)}
-              alt={product.title}
-              width={200}
-              height={150}
-              className="w-full h-32 object-cover rounded border"
-            />
+              className="relative aspect-square overflow-hidden rounded-md border border-border"
+            >
+              <Image
+                src={getPublicStorageUrl("product-photos", photo.storage_path)}
+                alt={product.title}
+                fill
+                sizes="(max-width: 640px) 50vw, 33vw"
+                className="object-cover"
+              />
+            </div>
           ))}
         </div>
       ) : (
-        <p className="text-sm text-gray-500 mb-4">Sin fotos</p>
+        <p className="mb-5 text-sm text-ink-soft">Sin fotos</p>
       )}
 
-      <p className="text-sm mb-3 whitespace-pre-wrap">{product.description}</p>
-      <p className="text-sm text-gray-600">Categoría: {product.categories?.name}</p>
-      <p className="text-sm text-gray-600">Zona: {product.zones?.name}</p>
-      <p className="text-sm text-gray-600 mb-4">
-        Condición: {CONDITION_LABELS[product.condition]}
+      <h1 className="font-display text-xl font-semibold text-ink">{product.title}</h1>
+      <p className="mt-1 font-display text-2xl font-bold text-terracota-deep">
+        ${product.price.toLocaleString("es-AR")}
       </p>
 
-      {!profile ? (
-        <p className="text-sm text-gray-600">Iniciá sesión para poder comprar.</p>
-      ) : isOwner ? (
-        <p className="text-sm text-gray-600">Esta es tu propia publicación.</p>
-      ) : sellerConnected ? (
-        <form action={createCheckout}>
-          <input type="hidden" name="product_id" value={product.id} />
-          <button type="submit" className="bg-black text-white rounded px-3 py-2">
-            Comprar
-          </button>
-        </form>
-      ) : (
-        <p className="text-sm text-gray-600">
-          El vendedor todavía no conectó Mercado Pago, así que este producto no se
-          puede comprar por ahora.
-        </p>
-      )}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {product.categories?.name && <Chip tone="terra">{product.categories.name}</Chip>}
+        {product.zones?.name && <Chip tone="azul">{product.zones.name}</Chip>}
+        <Chip tone={CONDITION_TONES[product.condition]}>{CONDITION_LABELS[product.condition]}</Chip>
+      </div>
+
+      <p className="mt-5 text-[.95rem] whitespace-pre-wrap text-ink-soft">{product.description}</p>
+
+      <div className="mt-6">
+        {!profile ? (
+          <p className="text-sm text-ink-soft">Iniciá sesión para poder comprar.</p>
+        ) : isOwner ? (
+          <p className="text-sm text-ink-soft">Esta es tu propia publicación.</p>
+        ) : sellerConnected ? (
+          <form action={createCheckout}>
+            <input type="hidden" name="product_id" value={product.id} />
+            <Button type="submit">Comprar</Button>
+          </form>
+        ) : (
+          <p className="text-sm text-ink-soft">
+            El vendedor todavía no conectó Mercado Pago, así que este producto no se puede
+            comprar por ahora.
+          </p>
+        )}
+      </div>
     </main>
   );
 }
