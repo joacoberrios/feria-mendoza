@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { signIn } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { TextField } from "@/components/ui/TextField";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function LoginPage({
   searchParams,
@@ -10,41 +13,29 @@ export default async function LoginPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="text-xl font-semibold mb-4">Iniciar sesión</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold">Iniciar sesión</h1>
       {error && (
-        <div className="mb-4 text-sm text-red-600">
+        <Alert variant="err">
           <p>{error}</p>
           {error.toLowerCase().includes("confirm") && (
             <p className="mt-1">
-              <Link href="/verify-email" className="underline">
+              <Link href="/verify-email" className="font-semibold text-azul-deep underline">
                 Reenviar email de confirmación
               </Link>
             </p>
           )}
-        </div>
+        </Alert>
       )}
-      <form action={signIn} className="flex flex-col gap-3">
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          required
-          className="border rounded px-3 py-2"
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Contraseña"
-          required
-          className="border rounded px-3 py-2"
-        />
-        <button type="submit" className="bg-black text-white rounded px-3 py-2">
+      <form action={signIn} className="flex flex-col gap-1">
+        <TextField name="email" type="email" label="Email" required />
+        <TextField name="password" type="password" label="Contraseña" required />
+        <Button type="submit" className="mt-2 w-full">
           Entrar
-        </button>
+        </Button>
       </form>
-      <p className="mt-4 text-sm">
+      <p className="mt-4 text-sm text-ink-soft">
         ¿No tenés cuenta?{" "}
-        <Link href="/register" className="underline">
+        <Link href="/register" className="font-semibold text-azul-deep underline">
           Crear cuenta
         </Link>
       </p>

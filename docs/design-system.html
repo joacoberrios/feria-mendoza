@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feria Mendoza · Guía de diseño para eCommerce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   FERIA MENDOZA · DESIGN TOKENS
+   Todos los valores están verificados para contraste WCAG.
+   ============================================================ */
+:root{
+  /* --- Marca --- */
+  --terracota:        #BC5B2E; /* titulares y marca (grande) */
+  --terracota-deep:   #A84A22; /* botón primario: texto blanco = 5.73:1 AA */
+  --azul:             #4E63A8; /* secundario / nav */
+  --azul-deep:        #3E5290; /* foco, links hover: 7.46:1 */
+  --menta:            #4FA98C; /* SOLO decorativo o con texto oscuro */
+  --menta-deep:       #2E7D63; /* verde para texto sobre blanco: 4.96:1 */
+  --ciruela:          #6E4E96; /* acento: blanco encima 6.58:1 */
+  --carmin:           #B23A3A; /* error / alertas: blanco encima 5.9:1 */
+  --lavanda:          #C4C4DD; /* chips suaves, texto oscuro 9.9:1 */
+
+  /* --- Neutros --- */
+  --ink:              #1F1B24; /* texto principal: 16.9:1 sobre blanco */
+  --ink-soft:         #4A4550; /* texto secundario: 9.3:1 */
+  --border:           #E4E0E8; /* bordes y divisores */
+  --surface:          #FFFFFF; /* tarjetas */
+  --bg:               #FBF9F5; /* fondo crema */
+  --bg-subtle:        #F4F1F6; /* secciones alternas */
+
+  /* --- Semánticos (estado) --- */
+  --success:          #2E7D63;
+  --error:            #B23A3A;
+  --info:             #4E63A8;
+
+  /* --- Radios (redondeados, guiño al logo circular) --- */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-pill: 999px;
+
+  /* --- Sombras (cálidas y suaves) --- */
+  --sh-sm: 0 1px 2px rgba(31,27,36,.06);
+  --sh-md: 0 4px 14px rgba(31,27,36,.08);
+  --sh-lg: 0 14px 36px rgba(31,27,36,.12);
+
+  /* --- Tipografía --- */
+  --font-display: 'Fredoka', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* --- Layout --- */
+  --container: 1120px;
+  --tap: 44px; /* tamaño mínimo de área táctil */
+}
+
+/* ============================================================ RESET */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--azul-deep);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--font-mono);font-size:.85em}
+
+/* ============================================================ TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(251,249,245,.85);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+  max-width:var(--container);margin:0 auto;
+  display:flex;align-items:center;gap:14px;
+  padding:14px 24px;
+}
+.mark{width:40px;height:40px;flex:none;border-radius:var(--r-pill);
+  background:conic-gradient(from 20deg,
+    #4E63A8 0 14%, #A84A22 14% 30%, #6E4E96 30% 46%,
+    #B23A3A 46% 60%, #4FA98C 60% 74%, #C4C4DD 74% 88%, #4E63A8 88% 100%);
+  display:grid;place-items:center;box-shadow:var(--sh-sm)}
+.mark svg{width:22px;height:22px}
+.brand-name{font-family:var(--font-display);font-weight:700;font-size:1.05rem;letter-spacing:.5px;line-height:1.05}
+.brand-name small{display:block;font-family:var(--font-body);font-weight:500;font-size:.68rem;color:var(--ink-soft);letter-spacing:.3px;text-transform:uppercase}
+.topbar .tag{margin-left:auto;font-size:.75rem;color:var(--ink-soft);background:var(--bg-subtle);padding:6px 12px;border-radius:var(--r-pill);border:1px solid var(--border)}
+
+/* ============================================================ SHELL */
+.shell{max-width:var(--container);margin:0 auto;display:grid;grid-template-columns:220px 1fr;gap:40px;padding:0 24px}
+.sidenav{position:sticky;top:88px;align-self:start;height:calc(100vh - 108px);overflow-y:auto;padding:28px 0}
+.sidenav h4{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft);margin:18px 0 8px}
+.sidenav a{display:block;padding:6px 12px;border-radius:var(--r-sm);color:var(--ink-soft);font-size:.9rem;font-weight:500}
+.sidenav a:hover{background:var(--bg-subtle);color:var(--ink);text-decoration:none}
+.content{padding:36px 0 120px;min-width:0}
+
+/* ============================================================ HERO */
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:48px;box-shadow:var(--sh-md);position:relative;overflow:hidden;margin-bottom:56px}
+.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;border-radius:var(--r-pill);
+  background:conic-gradient(from 20deg,#4E63A8 0 14%,#A84A22 14% 30%,#6E4E96 30% 46%,#B23A3A 46% 60%,#4FA98C 60% 74%,#C4C4DD 74% 88%,#4E63A8 88% 100%);
+  opacity:.18;filter:blur(2px)}
+.hero .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--terracota-deep);font-weight:600}
+.hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(2rem,5vw,3rem);line-height:1.08;margin:14px 0 16px;max-width:16ch}
+.hero p{max-width:56ch;color:var(--ink-soft);font-size:1.05rem}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;position:relative;z-index:1}
+.hero .meta span{background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--r-pill);padding:6px 14px;font-size:.82rem;color:var(--ink-soft)}
+
+/* ============================================================ SECTIONS */
+section{margin-bottom:64px;scroll-margin-top:88px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.sec-num{font-family:var(--font-mono);font-size:.8rem;color:var(--terracota-deep);font-weight:600;background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:3px 8px}
+h2.sec-title{font-family:var(--font-display);font-weight:600;font-size:1.75rem;letter-spacing:.2px}
+.sec-desc{color:var(--ink-soft);max-width:64ch;margin:8px 0 28px}
+h3.block-title{font-family:var(--font-display);font-weight:600;font-size:1.2rem;margin:32px 0 14px;display:flex;align-items:center;gap:10px}
+h3.block-title::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--terracota)}
+
+/* ============================================================ COLOR SWATCHES */
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.swatch{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:#fff;box-shadow:var(--sh-sm)}
+.swatch .chip{height:84px;display:flex;align-items:flex-end;padding:10px;font-family:var(--font-mono);font-size:.72rem;font-weight:500}
+.swatch .body{padding:10px 12px 12px}
+.swatch .nm{font-weight:600;font-size:.9rem}
+.swatch .use{font-size:.76rem;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+.swatch .ratio{display:inline-block;margin-top:8px;font-family:var(--font-mono);font-size:.68rem;padding:2px 7px;border-radius:var(--r-pill);border:1px solid var(--border);background:var(--bg-subtle)}
+.pass{color:var(--menta-deep)}.warn{color:var(--carmin)}
+
+/* ============================================================ TOKEN TABLE */
+.tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;font-size:.9rem;box-shadow:var(--sh-sm)}
+.tbl th,.tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--border)}
+.tbl th{background:var(--bg-subtle);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td code{background:var(--bg-subtle);padding:2px 7px;border-radius:6px;border:1px solid var(--border)}
+.tbl .swatch-dot{width:16px;height:16px;border-radius:5px;display:inline-block;vertical-align:middle;margin-right:8px;border:1px solid rgba(0,0,0,.08)}
+
+/* ============================================================ TYPE SPECIMEN */
+.type-row{display:flex;align-items:baseline;gap:20px;padding:16px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.type-row:last-child{border-bottom:none}
+.type-row .spec{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft);flex:none;width:150px}
+.d1{font-family:var(--font-display);font-weight:700;font-size:2.5rem;line-height:1.1}
+.d2{font-family:var(--font-display);font-weight:600;font-size:2rem;line-height:1.15}
+.d3{font-family:var(--font-display);font-weight:600;font-size:1.5rem}
+.d4{font-family:var(--font-display);font-weight:500;font-size:1.25rem}
+.b-lg{font-size:1.125rem}.b-md{font-size:1rem}.b-sm{font-size:.875rem}.cap{font-size:.75rem;color:var(--ink-soft);letter-spacing:.3px}
+
+/* ============================================================ SPACING / RADIUS DEMO */
+.scale-row{display:flex;align-items:center;gap:16px;margin-bottom:10px;flex-wrap:wrap}
+.scale-bar{height:20px;background:var(--terracota);border-radius:4px;opacity:.85}
+.scale-lbl{font-family:var(--font-mono);font-size:.78rem;color:var(--ink-soft);width:130px;flex:none}
+.radius-demo{display:flex;gap:16px;flex-wrap:wrap}
+.radius-demo div{width:88px;height:88px;background:var(--lavanda);display:grid;place-items:center;font-family:var(--font-mono);font-size:.72rem;color:var(--ink);border:1px solid rgba(0,0,0,.06)}
+.elev-demo{display:flex;gap:20px;flex-wrap:wrap}
+.elev-demo div{width:120px;height:88px;background:#fff;border-radius:var(--r-md);display:grid;place-items:center;font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft)}
+
+/* ============================================================ COMPONENT PREVIEW WRAP */
+.preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh-sm);margin-bottom:14px}
+.preview.subtle{background:var(--bg-subtle)}
+.specsheet{background:#fff;border:1px solid var(--border);border-left:3px solid var(--terracota);border-radius:0 var(--r-md) var(--r-md) 0;padding:14px 18px;margin-bottom:28px;font-size:.85rem}
+.specsheet ul{list-style:none;display:grid;gap:6px}
+.specsheet li{display:flex;gap:8px;color:var(--ink-soft)}
+.specsheet li b{color:var(--ink);font-weight:600;min-width:120px}
+.specsheet li code{background:var(--bg-subtle);border:1px solid var(--border);padding:1px 6px;border-radius:5px}
+
+/* ============================================================ BUTTONS (real, on-brand) */
+.btn{font-family:var(--font-body);font-weight:600;font-size:1rem;line-height:1;
+  border:none;border-radius:var(--r-pill);padding:14px 24px;cursor:pointer;
+  min-height:var(--tap);display:inline-flex;align-items:center;gap:8px;
+  transition:transform .12s ease, background .15s ease, box-shadow .15s ease;}
+.btn:focus-visible{outline:3px solid var(--azul-deep);outline-offset:2px}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--terracota-deep);color:#fff;box-shadow:var(--sh-sm)}
+.btn-primary:hover{background:#93401d;box-shadow:var(--sh-md)}
+.btn-secondary{background:var(--azul);color:#fff}
+.btn-secondary:hover{background:var(--azul-deep)}
+.btn-ghost{background:transparent;color:var(--terracota-deep);border:2px solid var(--terracota-deep);padding:12px 22px}
+.btn-ghost:hover{background:rgba(168,74,34,.08)}
+.btn[disabled]{background:var(--border);color:#9a95a0;cursor:not-allowed;box-shadow:none;transform:none}
+.btn-sm{font-size:.875rem;padding:10px 18px;min-height:38px}
+.btn-lg{font-size:1.075rem;padding:17px 30px}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+
+/* spinner for loading state */
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================ NAVBAR DEMO */
+.nav-demo{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm)}
+.nav-bar{display:flex;align-items:center;gap:20px;padding:12px 20px;background:#fff;border-bottom:1px solid var(--border)}
+.nav-bar .nb-mark{width:34px;height:34px;border-radius:var(--r-pill);flex:none;
+  background:conic-gradient(from 20deg,#4E63A8 0 14%,#A84A22 14% 30%,#6E4E96 30% 46%,#B23A3A 46% 60%,#4FA98C 60% 74%,#C4C4DD 74% 88%,#4E63A8 88% 100%)}
+.nav-bar .nb-name{font-family:var(--font-display);font-weight:700;font-size:1rem}
+.nav-links{display:flex;gap:6px;margin-left:10px}
+.nav-links a{padding:8px 14px;border-radius:var(--r-sm);font-size:.9rem;font-weight:500;color:var(--ink-soft)}
+.nav-links a.active{background:var(--bg-subtle);color:var(--terracota-deep)}
+.nav-links a:hover{background:var(--bg-subtle);text-decoration:none}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-search{background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--r-pill);padding:8px 14px;font-size:.85rem;color:var(--ink-soft);min-width:180px}
+.cart{position:relative;width:var(--tap);height:var(--tap);border-radius:var(--r-pill);border:1px solid var(--border);background:#fff;display:grid;place-items:center;cursor:pointer}
+.cart .count{position:absolute;top:2px;right:2px;background:var(--carmin);color:#fff;font-size:.65rem;font-weight:700;min-width:18px;height:18px;border-radius:var(--r-pill);display:grid;place-items:center;padding:0 4px}
+
+/* mobile bottom nav */
+.mnav{max-width:380px;display:flex;justify-content:space-around;background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:8px;box-shadow:var(--sh-md)}
+.mnav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-soft);font-size:.66rem;font-weight:500;padding:6px 10px;border-radius:var(--r-sm);min-width:var(--tap)}
+.mnav a.active{color:var(--terracota-deep)}
+.mnav svg{width:22px;height:22px}
+
+/* ============================================================ PRODUCT CARD */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.pcard{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);transition:transform .16s ease,box-shadow .16s ease}
+.pcard:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
+.pcard .ph{aspect-ratio:1/1;background:linear-gradient(135deg,var(--lavanda),#dfe0ee);position:relative;display:grid;place-items:center;color:#8b86a3;font-size:.75rem}
+.pcard .fav{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:var(--r-pill);background:rgba(255,255,255,.9);border:none;display:grid;place-items:center;cursor:pointer}
+.pcard .badge{position:absolute;top:10px;left:10px;background:var(--menta-deep);color:#fff;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 9px;border-radius:var(--r-pill)}
+.pcard .info{padding:14px}
+.pcard .seller{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.4px}
+.pcard .title{font-weight:600;font-size:.98rem;margin:3px 0 8px;color:var(--ink)}
+.pcard .price{font-family:var(--font-display);font-weight:700;font-size:1.25rem;color:var(--terracota-deep)}
+.pcard .price small{font-family:var(--font-body);font-weight:400;font-size:.78rem;color:var(--ink-soft);text-decoration:line-through;margin-left:6px}
+.pcard .cta{margin-top:12px;width:100%;justify-content:center}
+
+/* ============================================================ FORM INPUTS */
+.field{max-width:420px;margin-bottom:18px}
+.field label{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px}
+.field .hint{font-size:.76rem;color:var(--ink-soft);margin-top:5px}
+.field .inp{width:100%;font-family:var(--font-body);font-size:1rem;padding:12px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r-md);background:#fff;color:var(--ink);min-height:var(--tap);transition:border .15s,box-shadow .15s}
+.field .inp::placeholder{color:#a49fac}
+.field .inp:focus{outline:none;border-color:var(--azul-deep);box-shadow:0 0 0 3px rgba(62,82,144,.18)}
+.field.err .inp{border-color:var(--carmin)}
+.field.err .msg{color:var(--carmin);font-size:.78rem;margin-top:5px;display:flex;gap:5px;align-items:center;font-weight:500}
+.field.ok .inp{border-color:var(--menta-deep)}
+
+/* ============================================================ CHIPS / BADGES */
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip-tag{padding:6px 14px;border-radius:var(--r-pill);font-size:.82rem;font-weight:500;border:1px solid transparent}
+.chip-lav{background:var(--lavanda);color:var(--ink)}
+.chip-terra{background:#f6e3d8;color:var(--terracota-deep)}
+.chip-menta{background:#d9f0e7;color:var(--menta-deep)}
+.chip-azul{background:#e0e5f4;color:var(--azul-deep)}
+.chip-line{background:#fff;border-color:var(--border);color:var(--ink-soft)}
+
+/* ============================================================ FEEDBACK */
+.alert{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r-md);font-size:.9rem;margin-bottom:12px;align-items:flex-start}
+.alert svg{flex:none;width:20px;height:20px;margin-top:1px}
+.alert-ok{background:#e5f3ee;color:var(--menta-deep);border:1px solid #bfe3d5}
+.alert-err{background:#f6e2e2;color:var(--carmin);border:1px solid #e8c2c2}
+.alert-info{background:#e6eaf6;color:var(--azul-deep);border:1px solid #c6d0ec}
+
+/* ============================================================ A11Y CHECKLIST */
+.check{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:8px;box-shadow:var(--sh-sm)}
+.check li{list-style:none;display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);align-items:flex-start}
+.check li:last-child{border-bottom:none}
+.check .ico{flex:none;width:26px;height:26px;border-radius:var(--r-sm);background:#e5f3ee;color:var(--menta-deep);display:grid;place-items:center;font-weight:700;font-size:.8rem}
+.check b{display:block;margin-bottom:2px}
+.check span{color:var(--ink-soft);font-size:.88rem}
+
+/* ============================================================ CODE BLOCK */
+.codeblock{background:#241f2b;color:#efeaf4;border-radius:var(--r-lg);padding:20px 22px;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.7;box-shadow:var(--sh-md)}
+.codeblock .c{color:#a99fb8}
+.codeblock .p{color:#e0a37e}
+.codeblock .v{color:#8fc8b0}
+
+.callout{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:16px 18px;font-size:.88rem;color:var(--ink-soft);display:flex;gap:12px;margin:20px 0}
+.callout .k{flex:none;font-size:1.2rem}
+footer{max-width:var(--container);margin:0 auto;padding:40px 24px 60px;border-top:1px solid var(--border);color:var(--ink-soft);font-size:.85rem}
+
+/* ============================================================ RESPONSIVE */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .sidenav{display:none}
+  .hero{padding:32px 24px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= TOPBAR ================= -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1F1B24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5.5a1.6 1.6 0 1 1 1.2 2.6c0 1 -1.2 1.4 -1.2 2.4"/>
+        <path d="M12 10.5 4 16.5h16L12 10.5Z"/>
+        <path d="M11 13.4c0 -.9 1 -1.2 1 -.2c0 -1 1 -.7 1 .2c0 .8 -1 1.3 -1 1.3s-1 -.5 -1 -1.3Z" fill="#B23A3A" stroke="none"/>
+      </svg>
+    </div>
+    <div class="brand-name">FERIA MENDOZA<small>Design System · eCommerce</small></div>
+    <span class="tag">v1.0 · Guía de entrega</span>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- ================= SIDE NAV ================= -->
+  <nav class="sidenav" aria-label="Secciones de la guía">
+    <h4>Fundamentos</h4>
+    <a href="#intro">Introducción</a>
+    <a href="#color">Color</a>
+    <a href="#tipografia">Tipografía</a>
+    <a href="#espaciado">Espaciado y radios</a>
+    <a href="#elevacion">Elevación</a>
+    <a href="#iconos">Iconografía</a>
+    <h4>Componentes</h4>
+    <a href="#botones">Botones</a>
+    <a href="#navegacion">Navegación</a>
+    <a href="#cards">Tarjeta de producto</a>
+    <a href="#formularios">Formularios</a>
+    <a href="#chips">Chips y badges</a>
+    <a href="#feedback">Mensajes</a>
+    <h4>Calidad</h4>
+    <a href="#accesibilidad">Accesibilidad</a>
+    <a href="#handoff">Entrega (tokens)</a>
+  </nav>
+
+  <!-- ================= CONTENT ================= -->
+  <main class="content">
+
+    <!-- HERO -->
+    <section class="hero" id="intro">
+      <div class="eyebrow">Guía de diseño · Para el equipo de desarrollo</div>
+      <h1>La identidad de Feria Mendoza, traducida a valores exactos.</h1>
+      <p>Este documento es la fuente de verdad visual del eCommerce. Define colores, tipografía, espaciado y componentes con valores listos para código, y marca las reglas de accesibilidad que deben cumplirse. La idea: que cualquier pantalla nueva se sienta parte de Feria Mendoza sin tener que adivinar.</p>
+      <div class="meta">
+        <span>🎨 Paleta con contraste verificado (WCAG 2.1)</span>
+        <span>🧩 8 componentes especificados</span>
+        <span>♿ Objetivo: nivel AA</span>
+        <span>📐 Base de espaciado: 4px</span>
+      </div>
+    </section>
+
+    <!-- ========================= COLOR ========================= -->
+    <section id="color">
+      <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Color</h2></div>
+      <p class="sec-desc">La paleta nace del anillo multicolor y el logo de la marca. Cada color tiene un rol asignado y un ratio de contraste verificado. <b>Regla de oro:</b> el color no comunica solo por sí mismo (un daltónico no distingue "rojo = error"), por eso siempre se acompaña de texto o ícono.</p>
+
+      <h3 class="block-title">Colores de marca</h3>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="chip" style="background:#BC5B2E;color:#fff">#BC5B2E</div>
+          <div class="body"><div class="nm">Terracota</div><div class="use">Titulares grandes y sello de marca.</div><span class="ratio pass">4.49:1 · solo texto grande</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#A84A22;color:#fff">#A84A22</div>
+          <div class="body"><div class="nm">Terracota profundo</div><div class="use">Botón primario y links. Texto blanco encima.</div><span class="ratio pass">5.73:1 · AA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#4E63A8;color:#fff">#4E63A8</div>
+          <div class="body"><div class="nm">Azul aciano</div><div class="use">Acciones secundarias, navegación.</div><span class="ratio pass">5.72:1 · AA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#3E5290;color:#fff">#3E5290</div>
+          <div class="body"><div class="nm">Azul profundo</div><div class="use">Anillo de foco y links en hover.</div><span class="ratio pass">7.46:1 · AAA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#4FA98C;color:#1F1B24">#4FA98C</div>
+          <div class="body"><div class="nm">Verde menta</div><div class="use">Decorativo. ⚠ Nunca con texto blanco.</div><span class="ratio warn">Blanco: 2.84:1 · falla</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#2E7D63;color:#fff">#2E7D63</div>
+          <div class="body"><div class="nm">Verde profundo</div><div class="use">Éxito y verde sobre fondo blanco.</div><span class="ratio pass">4.96:1 · AA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#6E4E96;color:#fff">#6E4E96</div>
+          <div class="body"><div class="nm">Ciruela</div><div class="use">Acento, destacados, categorías.</div><span class="ratio pass">6.58:1 · AA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#B23A3A;color:#fff">#B23A3A</div>
+          <div class="body"><div class="nm">Carmín</div><div class="use">Errores, alertas, contador del carrito.</div><span class="ratio pass">5.9:1 · AA</span></div>
+        </div>
+        <div class="swatch">
+          <div class="chip" style="background:#C4C4DD;color:#1F1B24">#C4C4DD</div>
+          <div class="body"><div class="nm">Lavanda</div><div class="use">Chips suaves y placeholders. Texto oscuro.</div><span class="ratio pass">9.9:1 · AAA</span></div>
+        </div>
+      </div>
+
+      <h3 class="block-title">Neutros y superficies</h3>
+      <table class="tbl">
+        <thead><tr><th>Token</th><th>Hex</th><th>Uso</th><th>Contraste</th></tr></thead>
+        <tbody>
+          <tr><td><span class="swatch-dot" style="background:#1F1B24"></span><code>--ink</code></td><td><code>#1F1B24</code></td><td>Texto principal</td><td>16.9:1 sobre blanco · AAA</td></tr>
+          <tr><td><span class="swatch-dot" style="background:#4A4550"></span><code>--ink-soft</code></td><td><code>#4A4550</code></td><td>Texto secundario, ayudas</td><td>9.3:1 · AAA</td></tr>
+          <tr><td><span class="swatch-dot" style="background:#E4E0E8"></span><code>--border</code></td><td><code>#E4E0E8</code></td><td>Bordes y divisores</td><td>—</td></tr>
+          <tr><td><span class="swatch-dot" style="background:#FFFFFF"></span><code>--surface</code></td><td><code>#FFFFFF</code></td><td>Tarjetas y modales</td><td>—</td></tr>
+          <tr><td><span class="swatch-dot" style="background:#FBF9F5"></span><code>--bg</code></td><td><code>#FBF9F5</code></td><td>Fondo general (crema)</td><td>—</td></tr>
+          <tr><td><span class="swatch-dot" style="background:#F4F1F6"></span><code>--bg-subtle</code></td><td><code>#F4F1F6</code></td><td>Secciones alternas, inputs</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="callout"><span class="k">💡</span><div>Para el CTO: cargá estos valores como <b>CSS custom properties</b> (ver sección Entrega) o como tokens en Tailwind/Figma. Nunca hardcodees un hex suelto en un componente: siempre referenciá el token.</div></div>
+    </section>
+
+    <!-- ========================= TIPOGRAFÍA ========================= -->
+    <section id="tipografia">
+      <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Tipografía</h2></div>
+      <p class="sec-desc">Dos familias con roles claros. <b>Fredoka</b> (redondeada, cálida) toma la personalidad del logo dibujado a mano y se usa con moderación en titulares y precios. <b>Inter</b> hace todo el trabajo pesado de lectura e interfaz porque es neutra y clarísima en tamaños chicos. <b>JetBrains Mono</b> aparece solo para datos y códigos. Todas son gratuitas (Google Fonts).</p>
+
+      <div class="preview">
+        <div class="type-row"><span class="spec">Display / H1<br>Fredoka 700 · 40px<br>line-height 1.1</span><span class="d1">Vendé desde tu casa</span></div>
+        <div class="type-row"><span class="spec">H2<br>Fredoka 600 · 32px</span><span class="d2">Novedades del domingo</span></div>
+        <div class="type-row"><span class="spec">H3<br>Fredoka 600 · 24px</span><span class="d3">Camperas de invierno</span></div>
+        <div class="type-row"><span class="spec">H4 / Precio<br>Fredoka 500 · 20px</span><span class="d4">$18.900</span></div>
+        <div class="type-row"><span class="spec">Body grande<br>Inter 400 · 18px</span><span class="b-lg">Texto de introducción y descripciones destacadas de producto.</span></div>
+        <div class="type-row"><span class="spec">Body base<br>Inter 400 · 16px</span><span class="b-md">Cuerpo de texto por defecto. Todo lo que se lee en párrafo va a 16px como mínimo.</span></div>
+        <div class="type-row"><span class="spec">Body chico<br>Inter 400/500 · 14px</span><span class="b-sm">Metadatos, etiquetas de formulario, textos de apoyo.</span></div>
+        <div class="type-row"><span class="spec">Caption<br>Inter 500 · 12px</span><span class="cap">VENDEDOR · CATEGORÍA · FECHA</span></div>
+      </div>
+
+      <div class="specsheet"><ul>
+        <li><b>Escala</b><span>12 · 14 · 16 · 18 · 20 · 24 · 32 · 40px (proporción ~1.25)</span></li>
+        <li><b>Tamaño mínimo</b><span>16px para texto de lectura (evita zoom forzado en iOS y mejora accesibilidad).</span></li>
+        <li><b>Altura de línea</b><span>1.1 en titulares · 1.6 en cuerpo de texto.</span></li>
+        <li><b>Interletrado</b><span>Normal en cuerpo; +0.3–0.5px en captions/mayúsculas.</span></li>
+        <li><b>Ancho de lectura</b><span>máx. 64–70 caracteres por línea en párrafos.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= ESPACIADO ========================= -->
+    <section id="espaciado">
+      <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Espaciado y radios</h2></div>
+      <p class="sec-desc">Todo el espaciado deriva de una base de <b>4px</b>. Usar solo valores de la escala mantiene el ritmo visual coherente en toda la tienda.</p>
+
+      <h3 class="block-title">Escala de espaciado</h3>
+      <div class="preview">
+        <div class="scale-row"><span class="scale-lbl">4px · space-1</span><div class="scale-bar" style="width:4px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">8px · space-2</span><div class="scale-bar" style="width:8px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">12px · space-3</span><div class="scale-bar" style="width:12px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">16px · space-4</span><div class="scale-bar" style="width:16px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">24px · space-6</span><div class="scale-bar" style="width:24px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">32px · space-8</span><div class="scale-bar" style="width:32px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">48px · space-12</span><div class="scale-bar" style="width:48px"></div></div>
+        <div class="scale-row"><span class="scale-lbl">64px · space-16</span><div class="scale-bar" style="width:64px"></div></div>
+      </div>
+
+      <h3 class="block-title">Radios de esquina</h3>
+      <div class="preview">
+        <div class="radius-demo">
+          <div style="border-radius:8px">8px<br>sm</div>
+          <div style="border-radius:12px">12px<br>md</div>
+          <div style="border-radius:16px">16px<br>lg</div>
+          <div style="border-radius:24px">24px<br>xl</div>
+          <div style="border-radius:999px">pill</div>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Botones</b><span><code>pill</code> (999px) — coherente con el estilo redondo del logo.</span></li>
+        <li><b>Tarjetas / inputs</b><span><code>12–16px</code></span></li>
+        <li><b>Contenedores grandes</b><span><code>24px</code></span></li>
+      </ul></div>
+
+      <h3 class="block-title">Contenedor y breakpoints</h3>
+      <table class="tbl">
+        <thead><tr><th>Breakpoint</th><th>Ancho</th><th>Columnas de producto (sugerido)</th></tr></thead>
+        <tbody>
+          <tr><td>Móvil</td><td>&lt; 640px</td><td>2 columnas</td></tr>
+          <tr><td>Tablet</td><td>640–1024px</td><td>3 columnas</td></tr>
+          <tr><td>Desktop</td><td>&gt; 1024px</td><td>4 columnas</td></tr>
+          <tr><td>Contenedor máx.</td><td>1120px centrado</td><td>padding lateral 24px</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========================= ELEVACIÓN ========================= -->
+    <section id="elevacion">
+      <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Elevación</h2></div>
+      <p class="sec-desc">Sombras cálidas y suaves (tintadas con el color tinta, no negro puro) para dar profundidad sin ensuciar. Tres niveles, nada más.</p>
+      <div class="preview">
+        <div class="elev-demo">
+          <div style="box-shadow:var(--sh-sm)">sm · reposo</div>
+          <div style="box-shadow:var(--sh-md)">md · hover</div>
+          <div style="box-shadow:var(--sh-lg)">lg · flotante</div>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>sm</b><span><code>0 1px 2px rgba(31,27,36,.06)</code> — tarjetas en reposo, inputs.</span></li>
+        <li><b>md</b><span><code>0 4px 14px rgba(31,27,36,.08)</code> — hover de tarjeta, dropdowns.</span></li>
+        <li><b>lg</b><span><code>0 14px 36px rgba(31,27,36,.12)</code> — modales, carrito flotante.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= ICONOS ========================= -->
+    <section id="iconos">
+      <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Iconografía</h2></div>
+      <p class="sec-desc">Íconos de <b>trazo</b> (line), no rellenos, para dialogar con el logo lineal de la percha. Recomiendo una sola librería para todo el sitio y no mezclar estilos.</p>
+      <div class="specsheet"><ul>
+        <li><b>Librería sugerida</b><span><a href="https://lucide.dev" target="_blank" rel="noopener">Lucide</a> o <a href="https://phosphoricons.com" target="_blank" rel="noopener">Phosphor</a> (weight "regular"). Open source y consistentes.</span></li>
+        <li><b>Grilla</b><span>24×24px de diseño. Tamaños en uso: 20 / 24 / 28px.</span></li>
+        <li><b>Grosor de trazo</b><span>1.5–1.75px, uniforme en todo el set.</span></li>
+        <li><b>Color</b><span>Heredan <code>currentColor</code> del texto que acompañan.</span></li>
+        <li><b>Área táctil</b><span>Si el ícono es un botón, su zona clickeable es 44×44px aunque el dibujo mida 24px.</span></li>
+        <li><b>Regla</b><span>Un ícono nunca va solo como única etiqueta de una acción importante; se acompaña de texto o <code>aria-label</code>.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= BOTONES ========================= -->
+    <section id="botones">
+      <div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title">Botones</h2></div>
+      <p class="sec-desc">Jerarquía clara: un solo botón primario por pantalla (la acción principal). El texto describe la acción exacta: "Agregar al carrito", no "Enviar".</p>
+
+      <h3 class="block-title">Variantes</h3>
+      <div class="preview">
+        <div class="btn-row">
+          <button class="btn btn-primary">Agregar al carrito</button>
+          <button class="btn btn-secondary">Ver detalle</button>
+          <button class="btn btn-ghost">Seguir comprando</button>
+        </div>
+      </div>
+
+      <h3 class="block-title">Tamaños</h3>
+      <div class="preview">
+        <div class="btn-row">
+          <button class="btn btn-primary btn-sm">Chico · 38px</button>
+          <button class="btn btn-primary">Base · 44px</button>
+          <button class="btn btn-primary btn-lg">Grande · 52px</button>
+        </div>
+      </div>
+
+      <h3 class="block-title">Estados</h3>
+      <div class="preview">
+        <div class="btn-row">
+          <button class="btn btn-primary">Normal</button>
+          <button class="btn btn-primary" style="background:#93401d;box-shadow:var(--sh-md)">Hover</button>
+          <button class="btn btn-primary" style="outline:3px solid var(--azul-deep);outline-offset:2px">Foco (teclado)</button>
+          <button class="btn btn-primary"><span class="spin" aria-hidden="true"></span> Procesando</button>
+          <button class="btn btn-primary" disabled>Sin stock</button>
+        </div>
+      </div>
+
+      <div class="specsheet"><ul>
+        <li><b>Alto mínimo</b><span><code>44px</code> (área táctil accesible).</span></li>
+        <li><b>Padding</b><span><code>14px 24px</code> · radio <code>pill</code>.</span></li>
+        <li><b>Primario</b><span>fondo <code>#A84A22</code>, texto <code>#fff</code> (5.73:1). Hover <code>#93401d</code>.</span></li>
+        <li><b>Foco visible</b><span><code>outline:3px solid #3E5290; outline-offset:2px</code>. Nunca <code>outline:none</code> sin reemplazo.</span></li>
+        <li><b>Deshabilitado</b><span>fondo <code>--border</code>, <code>cursor:not-allowed</code>, <code>aria-disabled</code>.</span></li>
+        <li><b>Cargando</b><span>spinner + texto; el botón queda inerte para evitar doble compra.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= NAVEGACIÓN ========================= -->
+    <section id="navegacion">
+      <div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title">Navegación</h2></div>
+      <p class="sec-desc">Header simple en desktop; barra inferior fija en móvil (el pulgar llega fácil). El ítem activo se marca con color y fondo, no solo con color.</p>
+
+      <h3 class="block-title">Header (desktop)</h3>
+      <div class="nav-demo">
+        <div class="nav-bar">
+          <div class="nb-mark" aria-hidden="true"></div>
+          <span class="nb-name">Feria Mendoza</span>
+          <div class="nav-links">
+            <a href="#navegacion" class="active">Inicio</a>
+            <a href="#navegacion">Mujer</a>
+            <a href="#navegacion">Hombre</a>
+            <a href="#navegacion">Niños</a>
+            <a href="#navegacion">Vender</a>
+          </div>
+          <div class="nav-actions">
+            <input class="nav-search" placeholder="Buscar prendas…" aria-label="Buscar">
+            <button class="cart" aria-label="Carrito, 3 productos">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1F1B24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.3a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L21.5 7H6"/></svg>
+              <span class="count">3</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="block-title">Barra inferior (móvil)</h3>
+      <div class="preview subtle">
+        <div class="mnav">
+          <a href="#navegacion" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Inicio</a>
+          <a href="#navegacion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Buscar</a>
+          <a href="#navegacion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6a5 5 0 0 0-8.8-2.3A5 5 0 0 0 3.2 8.6c0 4 8.8 10 8.8 10s8.8-6 8.8-10Z"/></svg>Favoritos</a>
+          <a href="#navegacion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.3a1.5 1.5 0 0 0 1.5 1.2h8.2a1.5 1.5 0 0 0 1.5-1.2L21.5 7H6"/></svg>Carrito</a>
+          <a href="#navegacion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Cuenta</a>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Header alto</b><span>~64px, fondo <code>--surface</code>, borde inferior <code>--border</code>.</span></li>
+        <li><b>Ítem activo</b><span>fondo <code>--bg-subtle</code> + texto <code>--terracota-deep</code>. Usar <code>aria-current="page"</code>.</span></li>
+        <li><b>Carrito</b><span>contador en <code>--carmin</code>; el <code>aria-label</code> incluye la cantidad.</span></li>
+        <li><b>Móvil</b><span>máx. 5 destinos; cada uno ≥44px; ícono + texto siempre.</span></li>
+        <li><b>Sticky</b><span>header y barra móvil fijos con leve blur de fondo.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= CARDS ========================= -->
+    <section id="cards">
+      <div class="sec-head"><span class="sec-num">08</span><h2 class="sec-title">Tarjeta de producto</h2></div>
+      <p class="sec-desc">El componente más repetido del sitio, así que tiene que ser impecable. Muestra vendedor, prenda, precio y una acción. La foto manda: relación 1:1 para que la grilla quede pareja.</p>
+      <div class="preview subtle">
+        <div class="cards">
+          <article class="pcard">
+            <div class="ph"><span class="badge">Nuevo</span><button class="fav" aria-label="Agregar a favoritos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#B23A3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6a5 5 0 0 0-8.8-2.3A5 5 0 0 0 3.2 8.6c0 4 8.8 10 8.8 10s8.8-6 8.8-10Z"/></svg></button>Foto 1:1</div>
+            <div class="info">
+              <div class="seller">@romi.vende</div>
+              <div class="title">Campera de jean oversize</div>
+              <div class="price">$18.900 <small>$24.000</small></div>
+              <button class="btn btn-primary cta">Contactar</button>
+            </div>
+          </article>
+          <article class="pcard">
+            <div class="ph"><button class="fav" aria-label="Agregar a favoritos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#B23A3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6a5 5 0 0 0-8.8-2.3A5 5 0 0 0 3.2 8.6c0 4 8.8 10 8.8 10s8.8-6 8.8-10Z"/></svg></button>Foto 1:1</div>
+            <div class="info">
+              <div class="seller">@la.dani.mza</div>
+              <div class="title">Sweater de lana tejido a mano</div>
+              <div class="price">$12.500</div>
+              <button class="btn btn-primary cta">Contactar</button>
+            </div>
+          </article>
+          <article class="pcard">
+            <div class="ph"><span class="badge" style="background:var(--ciruela)">Usado</span><button class="fav" aria-label="Agregar a favoritos"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#B23A3A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6a5 5 0 0 0-8.8-2.3A5 5 0 0 0 3.2 8.6c0 4 8.8 10 8.8 10s8.8-6 8.8-10Z"/></svg></button>Foto 1:1</div>
+            <div class="info">
+              <div class="seller">@vestidor.cuyo</div>
+              <div class="title">Botas de cuero número 38</div>
+              <div class="price">$22.000</div>
+              <button class="btn btn-primary cta">Contactar</button>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Estructura</b><span>foto (1:1) → vendedor → título → precio → acción.</span></li>
+        <li><b>Radio / sombra</b><span><code>16px</code> · sombra <code>sm</code>, pasa a <code>lg</code> + subida de 4px en hover.</span></li>
+        <li><b>Precio</b><span>Fredoka 700 en <code>--terracota-deep</code>; precio anterior tachado en <code>--ink-soft</code>.</span></li>
+        <li><b>Badge</b><span>"Nuevo" en verde, "Usado" en ciruela; texto + color, nunca solo color.</span></li>
+        <li><b>Toda la tarjeta enlaza</b><span>al detalle; el corazón y el botón son acciones separadas (no anidar botones dentro del link).</span></li>
+        <li><b>Imágenes</b><span><code>loading="lazy"</code> + <code>alt</code> descriptivo con la prenda.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= FORMULARIOS ========================= -->
+    <section id="formularios">
+      <div class="sec-head"><span class="sec-num">09</span><h2 class="sec-title">Formularios</h2></div>
+      <p class="sec-desc">Etiqueta siempre visible arriba del campo (nunca solo placeholder). El error explica qué pasó y cómo resolverlo, con texto + color + ícono.</p>
+      <div class="preview">
+        <div class="field">
+          <label for="f1">Nombre y apellido</label>
+          <input class="inp" id="f1" placeholder="Ej: Romina Pérez">
+          <div class="hint">Como querés que aparezca en tu publicación.</div>
+        </div>
+        <div class="field ok">
+          <label for="f2">WhatsApp</label>
+          <input class="inp" id="f2" value="2617 24 7444">
+        </div>
+        <div class="field err">
+          <label for="f3">Email</label>
+          <input class="inp" id="f3" value="romina.com" aria-invalid="true" aria-describedby="f3e">
+          <div class="msg" id="f3e"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Falta el @ en el correo. Ej: nombre@mail.com</div>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Alto de campo</b><span>≥44px · padding <code>12px 14px</code> · radio <code>12px</code>.</span></li>
+        <li><b>Foco</b><span>borde <code>--azul-deep</code> + halo <code>0 0 0 3px rgba(62,82,144,.18)</code>.</span></li>
+        <li><b>Label</b><span>siempre presente y asociada con <code>for</code> / <code>id</code>.</span></li>
+        <li><b>Error</b><span>borde carmín + mensaje con <code>aria-describedby</code> y <code>aria-invalid="true"</code>.</span></li>
+        <li><b>Tipos correctos</b><span><code>type="email"</code>, <code>tel</code>, <code>inputmode</code> → mejor teclado en móvil.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= CHIPS ========================= -->
+    <section id="chips">
+      <div class="sec-head"><span class="sec-num">10</span><h2 class="sec-title">Chips y badges</h2></div>
+      <p class="sec-desc">Para categorías, filtros y estados. Fondos pastel derivados de la paleta, siempre con texto oscuro del mismo tono para asegurar contraste.</p>
+      <div class="preview">
+        <div class="chips">
+          <span class="chip-tag chip-terra">Camperas</span>
+          <span class="chip-tag chip-azul">Talle M</span>
+          <span class="chip-tag chip-menta">Envío pactado</span>
+          <span class="chip-tag chip-lav">Vintage</span>
+          <span class="chip-tag chip-line">+ Filtros</span>
+        </div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Forma</b><span>radio <code>pill</code> · padding <code>6px 14px</code> · 14px de texto.</span></li>
+        <li><b>Contraste</b><span>fondos pastel + texto del tono profundo (todos ≥4.5:1).</span></li>
+        <li><b>Filtros activos</b><span>si es clickeable/seleccionable, exponer estado con <code>aria-pressed</code>.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= FEEDBACK ========================= -->
+    <section id="feedback">
+      <div class="sec-head"><span class="sec-num">11</span><h2 class="sec-title">Mensajes del sistema</h2></div>
+      <p class="sec-desc">Confirmaciones y avisos. Cada tipo combina color + ícono + texto claro que dice qué pasó y qué sigue.</p>
+      <div class="preview">
+        <div class="alert alert-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><div><b>¡Producto agregado!</b> Ya está en tu carrito.</div></div>
+        <div class="alert alert-err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><div><b>No pudimos procesar el pago.</b> Revisá los datos de tu tarjeta e intentá de nuevo.</div></div>
+        <div class="alert alert-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div><b>Recordá:</b> la entrega la coordinás directo con el vendedor.</div></div>
+      </div>
+      <div class="specsheet"><ul>
+        <li><b>Éxito</b><span>verde profundo · ícono check.</span></li>
+        <li><b>Error</b><span>carmín · ícono alerta · explica la solución.</span></li>
+        <li><b>Info</b><span>azul · ícono información.</span></li>
+        <li><b>Live region</b><span>toasts dinámicos con <code>role="status"</code> / <code>aria-live="polite"</code> para lectores de pantalla.</span></li>
+      </ul></div>
+    </section>
+
+    <!-- ========================= ACCESIBILIDAD ========================= -->
+    <section id="accesibilidad">
+      <div class="sec-head"><span class="sec-num">12</span><h2 class="sec-title">Accesibilidad · checklist AA</h2></div>
+      <p class="sec-desc">Requisitos mínimos no negociables. Cumplirlos amplía el público comprador (incluye gente mayor y con baja visión, muy presente en una feria familiar) y además mejora el SEO.</p>
+      <ul class="check">
+        <li><span class="ico">1</span><div><b>Contraste de texto ≥ 4.5:1</b><span>3:1 para texto grande (≥24px) y para bordes de controles. La paleta de esta guía ya lo cumple.</span></div></li>
+        <li><span class="ico">2</span><div><b>Foco siempre visible</b><span>Todo elemento interactivo muestra un anillo de foco (azul profundo, offset 2px) al navegar con teclado. Prohibido <code>outline:none</code> sin reemplazo.</span></div></li>
+        <li><span class="ico">3</span><div><b>Área táctil ≥ 44×44px</b><span>Botones, íconos-acción y links del menú. Evita toques errados en el celular.</span></div></li>
+        <li><span class="ico">4</span><div><b>HTML semántico</b><span><code>&lt;button&gt;</code> para acciones, <code>&lt;a&gt;</code> para navegar, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, encabezados en orden (h1→h2→h3).</span></div></li>
+        <li><span class="ico">5</span><div><b>Imágenes con <code>alt</code></b><span>Cada foto de prenda describe qué es. Las decorativas llevan <code>alt=""</code>.</span></div></li>
+        <li><span class="ico">6</span><div><b>Formularios etiquetados</b><span><code>&lt;label for&gt;</code> en cada campo; errores con <code>aria-describedby</code> y <code>aria-invalid</code>.</span></div></li>
+        <li><span class="ico">7</span><div><b>El color no es el único mensaje</b><span>Estados y badges combinan color + ícono o texto (clave para daltonismo).</span></div></li>
+        <li><span class="ico">8</span><div><b>Navegable con teclado</b><span>Todo el flujo de compra se completa con Tab/Enter. Orden de foco lógico. Modales atrapan el foco y cierran con Esc.</span></div></li>
+        <li><span class="ico">9</span><div><b>Respeta <code>prefers-reduced-motion</code></b><span>Animaciones suaves y desactivables para quien lo configura.</span></div></li>
+        <li><span class="ico">10</span><div><b>Zoom hasta 200%</b><span>El layout no se rompe; sin scroll horizontal. Texto base 16px.</span></div></li>
+      </ul>
+      <div class="callout"><span class="k">🧪</span><div>Herramientas de verificación para el equipo: <b>axe DevTools</b>, <b>Lighthouse</b> (pestaña Accessibility) y navegación real solo con teclado antes de cada release.</div></div>
+    </section>
+
+    <!-- ========================= HANDOFF ========================= -->
+    <section id="handoff">
+      <div class="sec-head"><span class="sec-num">13</span><h2 class="sec-title">Entrega · tokens listos para código</h2></div>
+      <p class="sec-desc">Copiá este bloque como punto de partida. Define todos los tokens como variables CSS; el resto del sitio los referencia. Si usan Tailwind, se mapean 1:1 en <code>theme.extend</code>.</p>
+      <div class="codeblock"><span class="c">/* tokens.css — Feria Mendoza */</span>
+:root{
+  <span class="c">/* Marca */</span>
+  <span class="p">--terracota</span>: <span class="v">#BC5B2E</span>;
+  <span class="p">--terracota-deep</span>: <span class="v">#A84A22</span>;
+  <span class="p">--azul</span>: <span class="v">#4E63A8</span>;
+  <span class="p">--azul-deep</span>: <span class="v">#3E5290</span>;
+  <span class="p">--menta</span>: <span class="v">#4FA98C</span>;
+  <span class="p">--menta-deep</span>: <span class="v">#2E7D63</span>;
+  <span class="p">--ciruela</span>: <span class="v">#6E4E96</span>;
+  <span class="p">--carmin</span>: <span class="v">#B23A3A</span>;
+  <span class="p">--lavanda</span>: <span class="v">#C4C4DD</span>;
+  <span class="c">/* Neutros + superficies */</span>
+  <span class="p">--ink</span>: <span class="v">#1F1B24</span>;
+  <span class="p">--ink-soft</span>: <span class="v">#4A4550</span>;
+  <span class="p">--border</span>: <span class="v">#E4E0E8</span>;
+  <span class="p">--surface</span>: <span class="v">#FFFFFF</span>;
+  <span class="p">--bg</span>: <span class="v">#FBF9F5</span>;
+  <span class="p">--bg-subtle</span>: <span class="v">#F4F1F6</span>;
+  <span class="c">/* Estado */</span>
+  <span class="p">--success</span>: <span class="v">#2E7D63</span>;
+  <span class="p">--error</span>: <span class="v">#B23A3A</span>;
+  <span class="p">--info</span>: <span class="v">#4E63A8</span>;
+  <span class="c">/* Radios */</span>
+  <span class="p">--r-sm</span>: <span class="v">8px</span>;  <span class="p">--r-md</span>: <span class="v">12px</span>;
+  <span class="p">--r-lg</span>: <span class="v">16px</span>; <span class="p">--r-xl</span>: <span class="v">24px</span>;
+  <span class="p">--r-pill</span>: <span class="v">999px</span>;
+  <span class="c">/* Espaciado (base 4px) */</span>
+  <span class="p">--s-1</span>:<span class="v">4px</span>; <span class="p">--s-2</span>:<span class="v">8px</span>; <span class="p">--s-3</span>:<span class="v">12px</span>;
+  <span class="p">--s-4</span>:<span class="v">16px</span>; <span class="p">--s-6</span>:<span class="v">24px</span>; <span class="p">--s-8</span>:<span class="v">32px</span>;
+  <span class="c">/* Sombras */</span>
+  <span class="p">--sh-sm</span>: <span class="v">0 1px 2px rgba(31,27,36,.06)</span>;
+  <span class="p">--sh-md</span>: <span class="v">0 4px 14px rgba(31,27,36,.08)</span>;
+  <span class="p">--sh-lg</span>: <span class="v">0 14px 36px rgba(31,27,36,.12)</span>;
+  <span class="c">/* Tipografía */</span>
+  <span class="p">--font-display</span>: <span class="v">'Fredoka', sans-serif</span>;
+  <span class="p">--font-body</span>: <span class="v">'Inter', sans-serif</span>;
+  <span class="p">--font-mono</span>: <span class="v">'JetBrains Mono', monospace</span>;
+}</div>
+      <div class="callout"><span class="k">📦</span><div>Fuentes vía Google Fonts: <code>Fredoka</code> (400–700), <code>Inter</code> (400–700), <code>JetBrains Mono</code> (400–600). Autohospedar las fuentes mejora la velocidad de carga y la privacidad.</div></div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <b>Feria Mendoza · Design System v1.0</b> — Documento de entrega para desarrollo. Los valores de color están verificados contra WCAG 2.1 nivel AA. Objetivo de accesibilidad: AA en todo el flujo de compra. Ante cualquier duda de aplicación, esta guía manda por sobre criterios individuales.
+</footer>
+
+</body>
+</html>
