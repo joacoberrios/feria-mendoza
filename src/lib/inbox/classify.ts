@@ -6,8 +6,14 @@ import type {
   SocialConversationKind,
   SocialMessage,
 } from "@/types/database";
-import { CLASSIFY_SYSTEM_PROMPT, buildClassifyUserMessage } from "./prompts";
+import { buildClassifySystemPrompt, buildClassifyUserMessage } from "./prompts";
 import { getMediaCaption } from "./instagram-api";
+import { getFeaturedStoriesPlanDescription } from "./business-context";
+
+const PLATFORM_LABELS: Record<SocialConversation["platform"], string> = {
+  instagram: "Instagram",
+  whatsapp: "WhatsApp",
+};
 
 type AdminClient = SupabaseClient;
 
@@ -176,20 +182,25 @@ export async function classifyAndDraft(
     }
 
     const threadHistory = await fetchThreadHistory(admin, conversationId);
+    const platformLabel = PLATFORM_LABELS[conversation.platform];
 
     const userMessage = buildClassifyUserMessage({
       messageText: message.text ?? "",
       kind: conversation.kind,
+      platformLabel,
       mediaCaption,
       interactionCount: contact?.interaction_count ?? 0,
       threadHistory,
     });
 
+    const planDescription = await getFeaturedStoriesPlanDescription(admin);
+    const systemPrompt = buildClassifySystemPrompt({ platformLabel, planDescription });
+
     const anthropic = getAnthropicClient();
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 512,
-      system: CLASSIFY_SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
       tools: [CLASSIFY_TOOL],
       tool_choice: { type: "tool", name: "classify_message" },

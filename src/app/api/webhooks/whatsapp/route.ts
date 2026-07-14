@@ -2,6 +2,7 @@ import { NextResponse, after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyMetaSignature } from "@/lib/inbox/meta-signature";
 import { ingestInboundMessage, ingestEcho, ingestStatus } from "@/lib/whatsapp/ingest";
+import { classifyAndDraft } from "@/lib/inbox/classify";
 import type { WhatsAppWebhookPayload } from "@/lib/whatsapp/meta-types";
 
 // Handshake de suscripción — mismo mecanismo que Instagram, token propio
@@ -55,10 +56,12 @@ async function processPayload(rawBody: string) {
 
         for (const message of value?.messages ?? []) {
           try {
-            await ingestInboundMessage(admin, message, profileByWaId.get(message.from ?? "") ?? null);
-            // La clasificación con IA se suma en la Etapa 2 (el prompt
-            // todavía es específico de Instagram) — por ahora el mensaje
-            // queda ingerido y visible como "sin_clasificar".
+            const result = await ingestInboundMessage(
+              admin,
+              message,
+              profileByWaId.get(message.from ?? "") ?? null,
+            );
+            if (result) await classifyAndDraft(admin, result.conversation.id, result.message.id);
           } catch (err) {
             console.error("[whatsapp:webhook] error procesando mensaje:", err);
           }

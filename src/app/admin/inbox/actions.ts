@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCurrentProfile } from "@/lib/supabase/profile";
 import { classifyAndDraft } from "@/lib/inbox/classify";
 import {
   sendDirectMessage,
@@ -11,17 +10,8 @@ import {
   sendPublicReplyToComment,
 } from "@/lib/inbox/instagram-api";
 import { getDmWindowStatus, getCommentPrivateReplyWindow } from "@/lib/inbox/reply-window";
+import { requireAdmin, fail } from "./shared";
 import type { SocialMessageKind } from "@/types/database";
-
-async function requireAdmin() {
-  const profile = await getCurrentProfile();
-  if (!profile || profile.role !== "admin") redirect("/");
-  return profile;
-}
-
-function fail(message: string): never {
-  redirect(`/admin/inbox?error=${encodeURIComponent(message)}`);
-}
 
 // REGLA INVIOLABLE: esta es la ÚNICA función de todo el módulo que
 // termina en una llamada real de envío a Instagram, y solo corre detrás

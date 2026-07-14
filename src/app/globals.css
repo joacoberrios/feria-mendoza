@@ -29,6 +29,18 @@
   --color-error: #b23a3a;
   --color-info: #4e63a8;
 
+  /* WhatsApp (mockup aprobado, identidad "vino/uva" propia de esa
+     pestaña — el resto de neutros/superficies reusa los tokens de
+     arriba en vez de duplicarlos, el mockup standalone los tenía
+     casi idénticos por separado) */
+  --color-malbec: #4a1d3f;
+  --color-malbec-deep: #33142c;
+  --color-uva: #8b3a6f;
+  --color-vid: #3f7d4e;
+  --color-vid-deep: #2f6340;
+  --color-sol: #e0a63c;
+  --color-wa-brand: #25d366;
+
   /* Radios (guiño al logo circular) */
   --radius-sm: 8px;
   --radius-md: 12px;
