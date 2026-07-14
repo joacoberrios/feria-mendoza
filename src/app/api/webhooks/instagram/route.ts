@@ -2,6 +2,7 @@ import { NextResponse, after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyMetaSignature } from "@/lib/inbox/meta-signature";
 import { ingestInboundDm, ingestOutboundEcho, ingestInboundComment } from "@/lib/inbox/ingest";
+import { classifyAndDraft } from "@/lib/inbox/classify";
 import type { MetaWebhookPayload } from "@/lib/inbox/meta-types";
 
 // Handshake de suscripción del webhook — Meta llama esto una vez al
@@ -59,7 +60,8 @@ async function processPayload(rawBody: string) {
         if (isEcho) {
           await ingestOutboundEcho(admin, event);
         } else {
-          await ingestInboundDm(admin, event);
+          const result = await ingestInboundDm(admin, event);
+          if (result) await classifyAndDraft(admin, result.conversation.id, result.message.id);
         }
       } catch (err) {
         console.error("[instagram:webhook] error procesando mensaje:", err);
@@ -69,7 +71,8 @@ async function processPayload(rawBody: string) {
     for (const change of entry.changes ?? []) {
       if (change.field !== "comments") continue;
       try {
-        await ingestInboundComment(admin, change);
+        const result = await ingestInboundComment(admin, change);
+        if (result) await classifyAndDraft(admin, result.conversation.id, result.message.id);
       } catch (err) {
         console.error("[instagram:webhook] error procesando comentario:", err);
       }
