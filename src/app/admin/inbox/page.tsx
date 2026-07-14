@@ -6,6 +6,7 @@ import { FilterChipGroup } from "@/components/ui/Chip";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { InboxCard, type InboxCardData } from "@/components/admin/InboxCard";
+import { BackfillButton } from "@/components/admin/BackfillButton";
 import type {
   SocialClassification,
   SocialContact,
@@ -107,6 +108,8 @@ export default async function InboxPage({
       {sent && <Alert variant="ok">Respuesta enviada.</Alert>}
       {discarded && <Alert variant="ok">Borrador descartado.</Alert>}
       {regenerated && <Alert variant="ok">Borrador regenerado.</Alert>}
+
+      <BackfillButton />
 
       <form method="get" className="mb-8 flex flex-col gap-4">
         <FilterChipGroup

@@ -146,7 +146,15 @@ export async function findOrCreateDmConversation(
 // que es un hilo continuo) — siempre inserta una fila nueva.
 export async function createCommentConversation(
   admin: AdminClient,
-  params: { contactId: number; platform: SocialPlatform; igMediaId: string | null },
+  params: {
+    contactId: number;
+    platform: SocialPlatform;
+    igMediaId: string | null;
+    // El webhook no lo tiene a mano (se completa después, en la etapa de
+    // clasificación); el backfill sí, porque ya trajo el media con
+    // caption en el mismo pedido — pasarlo acá evita un fetch de más.
+    igMediaCaption?: string | null;
+  },
 ): Promise<SocialConversation> {
   const { data, error } = await admin
     .from("social_conversations")
@@ -155,10 +163,7 @@ export async function createCommentConversation(
       platform: params.platform,
       kind: "comment",
       ig_media_id: params.igMediaId,
-      // El caption se completa después, en la etapa de clasificación
-      // (requiere una llamada aparte a la Graph API) — acá no bloqueamos
-      // la ingesta del webhook por eso.
-      ig_media_caption: null,
+      ig_media_caption: params.igMediaCaption ?? null,
       status: "pending",
     })
     .select()

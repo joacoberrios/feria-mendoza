@@ -19,37 +19,58 @@ export async function getIgAccessToken(admin: AdminClient): Promise<string | nul
   return data?.ig_access_token ?? null;
 }
 
+export type GraphGetResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: string; rateLimited?: boolean };
+
+// GET genérico — media/comentarios/conversaciones del backfill y el
+// caption de la clasificación pasan todos por acá.
+export async function graphGet<T>(
+  admin: AdminClient,
+  path: string,
+  params?: Record<string, string>,
+): Promise<GraphGetResult<T>> {
+  const token = await getIgAccessToken(admin);
+  if (!token) {
+    return { ok: false, error: "No hay un access token de Instagram configurado (social_settings)." };
+  }
+
+  const url = path.startsWith("http") ? new URL(path) : new URL(`${GRAPH_API_BASE}${path}`);
+  for (const [key, value] of Object.entries(params ?? {})) {
+    url.searchParams.set(key, value);
+  }
+  url.searchParams.set("access_token", token);
+
+  try {
+    const res = await fetch(url);
+
+    if (res.status === 429) {
+      return { ok: false, error: "Instagram devolvió 429 (límite de uso).", rateLimited: true };
+    }
+
+    const json = (await res.json().catch(() => null)) as (T & { error?: { message?: string } }) | null;
+
+    if (!res.ok) {
+      return { ok: false, error: json?.error?.message ?? `Error ${res.status} de la Graph API` };
+    }
+
+    return { ok: true, data: json as T };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Error de red" };
+  }
+}
+
 // Trae el caption de una publicación para dar contexto a la
 // clasificación de un comentario. Falla en silencio (devuelve null) ante
 // cualquier error — la clasificación tiene que poder seguir sin esto,
 // nunca bloquear ni perder el mensaje por un caption que no se pudo traer.
 export async function getMediaCaption(admin: AdminClient, mediaId: string): Promise<string | null> {
-  try {
-    const token = await getIgAccessToken(admin);
-    if (!token) return null;
-
-    const url = new URL(`${GRAPH_API_BASE}/${mediaId}`);
-    url.searchParams.set("fields", "caption");
-    url.searchParams.set("access_token", token);
-
-    const res = await fetch(url, { method: "GET" });
-
-    if (res.status === 429) {
-      console.error("[instagram-api] rate limit al pedir el caption de", mediaId);
-      return null;
-    }
-
-    if (!res.ok) {
-      console.error("[instagram-api] error trayendo caption:", res.status, await res.text());
-      return null;
-    }
-
-    const body = (await res.json()) as { caption?: string };
-    return body.caption ?? null;
-  } catch (err) {
-    console.error("[instagram-api] excepción trayendo caption:", err);
+  const result = await graphGet<{ caption?: string }>(admin, `/${mediaId}`, { fields: "caption" });
+  if (!result.ok) {
+    console.error("[instagram-api] error trayendo caption:", result.error);
     return null;
   }
+  return result.data.caption ?? null;
 }
 
 export type SendResult = { ok: true; externalId: string } | { ok: false; error: string };
