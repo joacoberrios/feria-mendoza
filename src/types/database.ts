@@ -99,3 +99,77 @@ export type Order = {
   status: OrderStatus;
   created_at: string;
 };
+
+// ============================================================ Bandeja social
+
+export type SocialPlatform = "instagram" | "whatsapp";
+export type SocialConversationKind = "dm" | "comment";
+export type SocialConversationStatus = "pending" | "replied" | "archived" | "discarded";
+export type SocialClassification =
+  | "vendedor_potencial"
+  | "comprador_interesado"
+  | "consulta_general"
+  | "ruido"
+  | "spam"
+  | "sin_clasificar";
+export type SocialDirection = "in" | "out";
+export type SocialMessageKind = "dm" | "comment" | "comment_reply" | "private_reply";
+export type ReplyDraftStatus = "suggested" | "approved_sent" | "discarded" | "send_failed";
+
+export type SocialSettings = {
+  id: 1;
+  ig_access_token: string | null;
+  ig_token_expires_at: string | null;
+  updated_at: string;
+};
+
+export type SocialContact = {
+  id: number;
+  platform: SocialPlatform;
+  external_id: string;
+  username: string | null;
+  display_name: string | null;
+  interaction_count: number;
+  first_seen_at: string;
+  last_seen_at: string;
+};
+
+export type SocialConversation = {
+  id: number;
+  contact_id: number;
+  platform: SocialPlatform;
+  kind: SocialConversationKind;
+  ig_media_id: string | null;
+  ig_media_caption: string | null;
+  status: SocialConversationStatus;
+  classification: SocialClassification;
+  classification_confidence: number | null;
+  priority_score: number;
+  last_inbound_at: string | null;
+  created_at: string;
+};
+
+export type SocialMessage = {
+  id: number;
+  conversation_id: number;
+  direction: SocialDirection;
+  kind: SocialMessageKind;
+  external_id: string;
+  text: string | null;
+  raw_payload: Record<string, unknown>;
+  sent_by: string | null;
+  created_at: string;
+};
+
+export type ReplyDraft = {
+  id: number;
+  conversation_id: number;
+  in_reply_to: number | null;
+  draft_text: string | null;
+  status: ReplyDraftStatus;
+  model: string | null;
+  error_detail: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  created_at: string;
+};
