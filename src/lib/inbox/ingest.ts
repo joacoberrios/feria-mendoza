@@ -6,6 +6,8 @@ import type {
   SocialPlatform,
   SocialMessageKind,
   SocialDirection,
+  WaMessageOrigin,
+  WaDeliveryStatus,
 } from "@/types/database";
 import type { MetaMessagingEvent, MetaChangeEvent } from "./meta-types";
 
@@ -32,7 +34,13 @@ export async function recordInboundContact(
   admin: AdminClient,
   platform: SocialPlatform,
   externalId: string,
-  patch?: { username?: string | null; displayName?: string | null },
+  patch?: {
+    username?: string | null;
+    displayName?: string | null;
+    // Solo WhatsApp — quedan sin usar (undefined) para Instagram.
+    waId?: string | null;
+    phoneDisplay?: string | null;
+  },
 ): Promise<SocialContact> {
   const { data: existing } = await admin
     .from("social_contacts")
@@ -49,6 +57,8 @@ export async function recordInboundContact(
         last_seen_at: new Date().toISOString(),
         ...(patch?.username ? { username: patch.username } : {}),
         ...(patch?.displayName ? { display_name: patch.displayName } : {}),
+        ...(patch?.waId ? { wa_id: patch.waId } : {}),
+        ...(patch?.phoneDisplay ? { phone_display: patch.phoneDisplay } : {}),
       })
       .eq("id", existing.id)
       .select()
@@ -64,6 +74,8 @@ export async function recordInboundContact(
       external_id: externalId,
       username: patch?.username ?? null,
       display_name: patch?.displayName ?? null,
+      wa_id: patch?.waId ?? null,
+      phone_display: patch?.phoneDisplay ?? null,
       interaction_count: 1,
     })
     .select()
@@ -185,6 +197,11 @@ export async function insertMessage(
     text: string | null;
     rawPayload: unknown;
     sentBy?: string | null;
+    // Solo WhatsApp — se omiten del insert (quedan en su default/NULL de
+    // columna) para mensajes de Instagram.
+    wamid?: string | null;
+    origin?: WaMessageOrigin;
+    deliveryStatus?: WaDeliveryStatus | null;
   },
 ): Promise<SocialMessage | null> {
   const { data, error } = await admin
@@ -197,6 +214,9 @@ export async function insertMessage(
       text: params.text,
       raw_payload: (params.rawPayload ?? {}) as Record<string, unknown>,
       sent_by: params.sentBy ?? null,
+      ...(params.wamid !== undefined ? { wamid: params.wamid } : {}),
+      ...(params.origin !== undefined ? { origin: params.origin } : {}),
+      ...(params.deliveryStatus !== undefined ? { delivery_status: params.deliveryStatus } : {}),
     })
     .select()
     .single<SocialMessage>();

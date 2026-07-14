@@ -116,6 +116,16 @@ export type SocialDirection = "in" | "out";
 export type SocialMessageKind = "dm" | "comment" | "comment_reply" | "private_reply";
 export type ReplyDraftStatus = "suggested" | "approved_sent" | "discarded" | "send_failed";
 
+// WhatsApp (migración 0015)
+export type WaFollowUpStatus =
+  | "none"
+  | "needs_follow_up"
+  | "follow_up_suggested"
+  | "follow_up_sent"
+  | "dismissed";
+export type WaMessageOrigin = "customer" | "api" | "phone_app";
+export type WaDeliveryStatus = "pending" | "sent" | "delivered" | "read" | "failed";
+
 export type SocialSettings = {
   id: 1;
   ig_access_token: string | null;
@@ -132,6 +142,8 @@ export type SocialContact = {
   interaction_count: number;
   first_seen_at: string;
   last_seen_at: string;
+  wa_id: string | null;
+  phone_display: string | null;
 };
 
 export type SocialConversation = {
@@ -147,6 +159,10 @@ export type SocialConversation = {
   priority_score: number;
   last_inbound_at: string | null;
   created_at: string;
+  customer_last_message_at: string | null;
+  business_last_message_at: string | null;
+  free_window_expires_at: string | null;
+  follow_up_status: WaFollowUpStatus;
 };
 
 export type SocialMessage = {
@@ -159,6 +175,10 @@ export type SocialMessage = {
   raw_payload: Record<string, unknown>;
   sent_by: string | null;
   created_at: string;
+  wamid: string | null;
+  origin: WaMessageOrigin;
+  delivery_status: WaDeliveryStatus | null;
+  delivery_error: string | null;
 };
 
 export type ReplyDraft = {

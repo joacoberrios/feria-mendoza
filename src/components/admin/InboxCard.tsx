@@ -114,6 +114,7 @@ export function InboxCard({ data }: { data: InboxCardData }) {
         <form className="mt-3 flex flex-col gap-2">
           <input type="hidden" name="conversation_id" value={conversation.id} />
           <input type="hidden" name="draft_id" value={draft.id} />
+          <input type="hidden" name="platform" value={conversation.platform} />
           <input type="hidden" name="contact_external_id" value={contact.external_id} />
           <input type="hidden" name="comment_external_id" value={latestInbound?.external_id ?? ""} />
           <input type="hidden" name="last_inbound_at" value={conversation.last_inbound_at ?? ""} />

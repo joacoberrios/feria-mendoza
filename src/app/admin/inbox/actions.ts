@@ -44,10 +44,18 @@ export async function approveAndSend(formData: FormData) {
   const lastInboundAt = formData.get("last_inbound_at")
     ? String(formData.get("last_inbound_at"))
     : null;
+  const platform = String(formData.get("platform") ?? "instagram");
 
   if (!text) fail("El mensaje no puede estar vacío.");
   if (!Number.isFinite(draftId) || !Number.isFinite(conversationId)) {
     fail("Faltan datos para enviar la respuesta.");
+  }
+  // Esta función solo sabe hablar con la Graph API de Instagram — el
+  // envío de WhatsApp tiene su propio server action (approveWhatsappReply,
+  // Etapa 2 del módulo de WhatsApp). Sin esta guarda, un borrador de
+  // WhatsApp regenerado por error terminaría intentando mandarse por acá.
+  if (platform !== "instagram") {
+    fail("Esta conversación no es de Instagram — usá la acción de WhatsApp para responderla.");
   }
 
   const supabase = await createClient();

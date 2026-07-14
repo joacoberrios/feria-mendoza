@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const rawBody = await request.text();
   const signature = request.headers.get("x-hub-signature-256");
 
-  if (!verifyMetaSignature(rawBody, signature)) {
+  if (!verifyMetaSignature(rawBody, signature, process.env.META_APP_SECRET)) {
     console.error("[instagram:webhook] firma inválida, se ignora la notificación");
     // 403, y no tocamos la DB: una firma inválida no es un evento real de
     // Meta (o el App Secret está mal configurado).
