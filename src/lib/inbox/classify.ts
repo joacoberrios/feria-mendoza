@@ -163,6 +163,21 @@ export async function classifyAndDraft(
     return;
   }
 
+  // Sin ANTHROPIC_API_KEY configurada esto es un estado ESPERADO (la IA
+  // es opcional, ver InboxCard/WhatsAppInboxCard) — no un error real. Se
+  // corta acá con un log de una línea en vez de dejar que el SDK tire su
+  // excepción de auth y la caigamos como error ruidoso más abajo.
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.log(`[inbox:classify] sin ANTHROPIC_API_KEY configurada — mensaje ${messageId} queda sin_clasificar.`);
+    const { data: contactNoKey } = await admin
+      .from("social_contacts")
+      .select("interaction_count")
+      .eq("id", conversation.contact_id)
+      .single<{ interaction_count: number }>();
+    await markUnclassified(admin, conversation, contactNoKey?.interaction_count ?? 0);
+    return;
+  }
+
   try {
     const { data: contact } = await admin
       .from("social_contacts")

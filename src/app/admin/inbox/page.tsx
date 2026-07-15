@@ -31,6 +31,7 @@ type InboxSearchParams = {
   archived?: string;
   error?: string;
   sent?: string;
+  sent_dry_run?: string;
   discarded?: string;
   archived_ok?: string;
   regenerated?: string;
@@ -72,6 +73,12 @@ export default async function InboxPage({
 
       {params.error && <Alert variant="err">{params.error}</Alert>}
       {params.sent && <Alert variant="ok">Respuesta enviada.</Alert>}
+      {params.sent_dry_run && (
+        <Alert variant="info">
+          Se simuló el envío (INBOX_DRY_RUN=true) — <strong>no le llegó nada de verdad al contacto.</strong>{" "}
+          Revisá los logs del server para ver el mensaje que se habría mandado.
+        </Alert>
+      )}
       {params.discarded && <Alert variant="ok">Borrador descartado.</Alert>}
       {params.regenerated && <Alert variant="ok">Borrador regenerado.</Alert>}
 

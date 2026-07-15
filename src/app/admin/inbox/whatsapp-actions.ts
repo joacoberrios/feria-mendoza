@@ -26,6 +26,10 @@ export async function approveWhatsappReply(formData: FormData) {
   if (!Number.isFinite(conversationId)) fail("Faltan datos para enviar la respuesta.");
   if (!waId) fail("Falta el número de WhatsApp del contacto.");
 
+  console.log(
+    `[whatsapp:approve] admin=${profile.id} conversation=${conversationId} draft=${draftId ?? "(ninguno, respuesta manual)"} to=${waId}`,
+  );
+
   const supabase = await createClient();
 
   // Regla dura de ventana, validada acá — nunca confiar en lo que
@@ -41,6 +45,7 @@ export async function approveWhatsappReply(formData: FormData) {
     !conversation?.free_window_expires_at || new Date(conversation.free_window_expires_at) <= new Date();
 
   if (windowExpired) {
+    console.log(`[whatsapp:approve] conversation=${conversationId} ventana vencida, no se envía`);
     await supabase
       .from("social_conversations")
       .update({ follow_up_status: "needs_follow_up" })
@@ -57,14 +62,22 @@ export async function approveWhatsappReply(formData: FormData) {
   const sendResult = await sendWhatsappTextMessage(waId, text);
 
   if (!sendResult.ok) {
+    console.error(`[whatsapp:approve] FALLÓ el envío — conversation=${conversationId}:`, sendResult.error);
     if (draftId !== null) {
       await supabase
         .from("reply_drafts")
         .update({ status: "send_failed", error_detail: sendResult.error })
         .eq("id", draftId);
     }
+    // Visible en la card: si había draft, error_detail queda ahí y la
+    // card lo muestra. Siempre visible además acá arriba de la bandeja
+    // vía ?error=, tenga o no draft asociado.
     fail(sendResult.error);
   }
+
+  console.log(
+    `[whatsapp:approve] envío OK — conversation=${conversationId} wamid=${sendResult.wamid}${sendResult.dryRun ? " (DRY RUN, no salió de verdad)" : ""}`,
+  );
 
   const nowIso = new Date().toISOString();
 
@@ -98,7 +111,10 @@ export async function approveWhatsappReply(formData: FormData) {
     .update({ status: "replied", business_last_message_at: nowIso })
     .eq("id", conversationId);
 
-  redirect("/admin/inbox?sent=1");
+  // Distinto de un envío real — para que un admin no confunda "se
+  // marcó como enviado" (dry run, INBOX_DRY_RUN=true) con que el
+  // mensaje efectivamente le llegó al contacto.
+  redirect(sendResult.dryRun ? "/admin/inbox?sent_dry_run=1" : "/admin/inbox?sent=1");
 }
 
 export async function discardWhatsappDraft(formData: FormData) {

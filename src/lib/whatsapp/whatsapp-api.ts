@@ -6,7 +6,9 @@
 
 const GRAPH_API_BASE = "https://graph.facebook.com/v23.0";
 
-export type SendResult = { ok: true; wamid: string } | { ok: false; error: string };
+export type SendResult =
+  | { ok: true; wamid: string; dryRun?: true }
+  | { ok: false; error: string };
 
 function isDryRun(): boolean {
   return process.env.INBOX_DRY_RUN === "true";
@@ -18,7 +20,7 @@ function isDryRun(): boolean {
 export async function sendWhatsappTextMessage(waId: string, text: string): Promise<SendResult> {
   if (isDryRun()) {
     console.log(`[whatsapp-api] DRY RUN, no se envía de verdad → to=${waId}`, JSON.stringify({ text }));
-    return { ok: true, wamid: `dry-run-${Date.now()}` };
+    return { ok: true, wamid: `dry-run-${Date.now()}`, dryRun: true };
   }
 
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -51,11 +53,19 @@ export async function sendWhatsappTextMessage(waId: string, text: string): Promi
     }
 
     const json = (await res.json().catch(() => null)) as
-      | { messages?: { id?: string }[]; error?: { message?: string } }
+      | {
+          messages?: { id?: string }[];
+          error?: { message?: string; error_data?: { details?: string } };
+        }
       | null;
 
     if (!res.ok) {
-      return { ok: false, error: json?.error?.message ?? `Error ${res.status} de la Cloud API` };
+      // error_data.details trae la explicación en español de Meta
+      // (ej. "agregá el número a la lista de destinatarios") — más
+      // accionable que el message crudo en inglés cuando está.
+      const detail = json?.error?.error_data?.details;
+      const message = json?.error?.message ?? `Error ${res.status} de la Cloud API`;
+      return { ok: false, error: detail ? `${message} — ${detail}` : message };
     }
 
     const wamid = json?.messages?.[0]?.id;
