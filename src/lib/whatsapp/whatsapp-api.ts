@@ -14,12 +14,28 @@ function isDryRun(): boolean {
   return process.env.INBOX_DRY_RUN === "true";
 }
 
+// Confirmado empíricamente contra la Graph API real: Meta identifica a
+// los contactos argentinos con el "9" de celular (5492616637057, lo que
+// llega en los webhooks entrantes y lo que devuelve como wa_id
+// canónico), pero el campo "to" al ENVIAR rechaza ese mismo formato
+// (#131030) — hay que sacarle el 9 justo ahí. Es un comportamiento
+// puntual de Meta para Argentina, no un bug nuestro; se aísla acá para
+// no tener que acordarse de esto en cada lugar que arma un envío.
+function toGraphApiRecipient(waId: string): string {
+  if (waId.startsWith("549") && waId.length === 13) {
+    return "54" + waId.slice(3);
+  }
+  return waId;
+}
+
 // Ante 429 no reintenta — mismo criterio que Instagram: un reintento
 // automático podría duplicar un envío si la respuesta se perdió pero el
 // mensaje sí había salido.
 export async function sendWhatsappTextMessage(waId: string, text: string): Promise<SendResult> {
+  const to = toGraphApiRecipient(waId);
+
   if (isDryRun()) {
-    console.log(`[whatsapp-api] DRY RUN, no se envía de verdad → to=${waId}`, JSON.stringify({ text }));
+    console.log(`[whatsapp-api] DRY RUN, no se envía de verdad → to=${to}`, JSON.stringify({ text }));
     return { ok: true, wamid: `dry-run-${Date.now()}`, dryRun: true };
   }
 
@@ -42,7 +58,7 @@ export async function sendWhatsappTextMessage(waId: string, text: string): Promi
       },
       body: JSON.stringify({
         messaging_product: "whatsapp",
-        to: waId,
+        to,
         type: "text",
         text: { body: text },
       }),
