@@ -37,10 +37,26 @@ Extiende la bandeja social existente (`/admin/inbox`, ver también `docs/inbox-s
 3. **Onboarding de Coexistence**: desde el dashboard de WhatsApp de la app, elegir la opción de conectar un número que ya usa la app WhatsApp Business del celular (Coexistence) y escanear el QR desde el teléfono (necesita la app WhatsApp Business actualizada). Esto deja la app del teléfono funcionando en paralelo con la API — los mensajes que se manden a mano desde el celular llegan igual por webhook como "echoes" (ver `smb_message_echoes` en el código).
 4. **Configurar el webhook**: Callback URL `https://<tu-dominio>/api/webhooks/whatsapp`, Verify Token = el valor de `WHATSAPP_WEBHOOK_VERIFY_TOKEN`.
 5. **⚠️ Suscribir DOS campos, no uno**: en la lista de webhook fields, tildar tanto **`messages`** (mensajes entrantes + estados de entrega) como **`smb_message_echoes`** (mensajes mandados a mano desde la app del teléfono). Son suscripciones independientes — si solo tildás `messages`, los echoes de Coexistence nunca van a llegar y el admin podría terminar aprobando una respuesta a un chat que ya se respondió desde el celular.
-5. **Completar `.env.local`** (ver `.env.local.example`): `WHATSAPP_ACCESS_TOKEN` (el token permanente del paso 2), `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_BUSINESS_ACCOUNT_ID` (dashboard de WhatsApp → API Setup), `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` (App settings → Basic → App secret de la app usada en el paso 1).
-6. **Correr la migración** `supabase/migrations/0015_whatsapp.sql` en el SQL Editor de Supabase antes de activar el webhook.
+6. **Completar `.env.local`** (ver `.env.local.example`): `WHATSAPP_ACCESS_TOKEN` (el token permanente del paso 2), `WHATSAPP_PHONE_NUMBER_ID` y `WHATSAPP_BUSINESS_ACCOUNT_ID` (dashboard de WhatsApp → API Setup), `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` (App settings → Basic → App secret de la app usada en el paso 1).
+7. **Correr la migración** `supabase/migrations/0015_whatsapp.sql` en el SQL Editor de Supabase antes de activar el webhook.
 
 Igual que Instagram: la IA solo sugiere, cero envíos automáticos — todo mensaje saliente pasa por aprobación manual en `/admin/inbox`.
+
+### Exponer el server local con HTTPS para probar el webhook (túnel)
+
+Meta necesita pegarle a una URL pública HTTPS — no le llega a `localhost:3000` directo. Para desarrollo/pruebas, la forma más simple sin crear cuenta en ningún lado es un túnel SSH efímero (el mismo mecanismo que `ssh -R`, sin instalar nada):
+
+```bash
+ssh -R 80:localhost:3000 serveo.net
+```
+
+Al conectar, imprime una línea tipo `Forwarding HTTP traffic from https://<subdominio-random>.serveousercontent.com` — esa URL + `/api/webhooks/whatsapp` es la Callback URL que va en el dashboard de Meta mientras se prueba en local.
+
+**Importante:**
+- La URL es **efímera**: cambia cada vez que se reinicia el túnel (sin cuenta no se puede fijar un subdominio). Si el túnel se cae (reinicio de Mac, cambio de red, etc.) hay que volver a correr el comando y actualizar la Callback URL en Meta con la URL nueva.
+- Dejar la terminal/proceso corriendo mientras se hacen pruebas — al cortar el SSH, el túnel se cae.
+- Alternativa si `serveo.net` no anda: `cloudflared tunnel --url http://localhost:3000` (`brew install cloudflared` primero) — en teoría es la opción más simple sin cuenta, pero requiere que el DNS de `trycloudflare.com` resuelva; algunos routers/ISP lo bloquean por categoría (nos pasó probándolo). Si `nslookup trycloudflare.com` no resuelve, usar `serveo.net` en su lugar, como arriba.
+- Nada de esto hace falta en producción: ahí la Callback URL es el dominio real de Vercel, sin túnel.
 
 ## Estructura del proyecto
 
