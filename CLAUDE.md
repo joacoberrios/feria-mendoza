@@ -6,6 +6,17 @@
 
 ---
 
+## ⚠️ REGLA DE SINCRONIZACIÓN (leer antes de tocar nada)
+
+Este proyecto se trabaja desde varias máquinas y sesiones (Claude Code local en Mac, Claude Code web). Para no pisar ni perder trabajo:
+
+- **Todo el trabajo se hace en branches `feature/*`**, nunca directo en `main`.
+- **Toda sesión debe terminar con push al remoto** — commitear local sin pushear equivale a perder el trabajo (la próxima sesión, en otra máquina, no lo va a ver).
+- **Al iniciar cualquier sesión**: `git fetch` + `pull` del branch activo antes de tocar nada.
+- **Nunca commitear secretos**: `.env.local` no se versiona; las credenciales viven solo en `.env.local` (local) y en Vercel (producción).
+
+---
+
 ## 1. Visión del producto
 
 Feria Mendoza es un marketplace local (Mendoza, Argentina) donde usuarios verificados pueden publicar y vender productos, y compradores pueden encontrarlos y pagarlos online. El negocio ya tiene un canal activo de venta de publicaciones vía Instagram (gestionado manualmente, fuera de la app); el desarrollo actual se enfoca en el **canal Web/App**, que digitaliza todo el flujo: publicación paga, verificación de identidad, catálogo, compra y cobro.
