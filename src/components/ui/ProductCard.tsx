@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPublicStorageUrl } from "@/lib/supabase/storage";
 import { CONDITION_LABELS } from "@/lib/product-labels";
+import { SellerBadge } from "@/components/ui/SellerBadge";
 import type { ProductCondition } from "@/types/database";
 
 // Badges son sólidos (a diferencia de los chips, que son pastel) — ver
@@ -19,6 +20,8 @@ export type ProductCardData = {
   condition: ProductCondition;
   zoneName?: string | null;
   photoPath: string | null;
+  sellerUsername?: string | null;
+  sellerAvatarPath?: string | null;
 };
 
 // Tarjeta de producto — ver sección 08 de docs/design-system.html
@@ -55,6 +58,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           ${product.price.toLocaleString("es-AR")}
         </p>
         {product.zoneName && <p className="mt-0.5 text-xs text-ink-soft">{product.zoneName}</p>}
+        <div className="mt-2">
+          <SellerBadge
+            username={product.sellerUsername ?? null}
+            avatarPath={product.sellerAvatarPath ?? null}
+          />
+        </div>
       </div>
     </Link>
   );

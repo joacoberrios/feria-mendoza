@@ -21,7 +21,18 @@ export type Profile = {
   role: UserRole;
   verification_status: VerificationStatus;
   dni_photo_url: string | null;
+  username: string | null;
+  avatar_url: string | null;
   created_at: string;
+};
+
+// Vista public.seller_public_profiles (0016) — columnas de users seguras
+// para mostrar a cualquier usuario (RLS de users solo deja ver la fila
+// propia).
+export type SellerPublicProfile = {
+  id: string;
+  username: string | null;
+  avatar_url: string | null;
 };
 
 export type Category = {

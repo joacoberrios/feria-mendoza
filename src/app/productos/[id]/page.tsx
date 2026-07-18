@@ -9,6 +9,8 @@ import { createCheckout } from "./actions";
 import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
+import { SellerBadge } from "@/components/ui/SellerBadge";
+import type { SellerPublicProfile } from "@/types/database";
 
 type ProductDetailRow = {
   id: number;
@@ -53,6 +55,12 @@ export default async function ProductDetailPage({
   const isOwner = profile?.id === product.seller_id;
   const sellerConnected = profile && !isOwner ? await isSellerMpConnected(product.seller_id) : false;
 
+  const { data: sellerProfile } = await supabase
+    .from("seller_public_profiles")
+    .select("id, username, avatar_url")
+    .eq("id", product.seller_id)
+    .maybeSingle<SellerPublicProfile>();
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
       {error && <Alert variant="err">{error}</Alert>}
@@ -82,6 +90,14 @@ export default async function ProductDetailPage({
       <p className="mt-1 font-display text-2xl font-bold text-terracota-deep">
         ${product.price.toLocaleString("es-AR")}
       </p>
+
+      <div className="mt-3">
+        <SellerBadge
+          username={sellerProfile?.username ?? null}
+          avatarPath={sellerProfile?.avatar_url ?? null}
+          size="md"
+        />
+      </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {product.categories?.name && <Chip tone="terra">{product.categories.name}</Chip>}

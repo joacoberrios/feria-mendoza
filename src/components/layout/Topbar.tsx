@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { signOut } from "@/app/actions";
+import { Avatar } from "@/components/ui/Avatar";
 
 const NAV_LINK_CLASSES =
   "rounded-sm px-3 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle hover:text-ink";
@@ -79,7 +80,13 @@ export async function Topbar() {
         <div className="ml-auto flex items-center gap-3">
           {profile ? (
             <>
-              <Link href="/perfil" className={NAV_LINK_CLASSES}>
+              <Link href="/perfil" className={`flex items-center gap-2 ${NAV_LINK_CLASSES}`}>
+                <Avatar
+                  avatarPath={profile.avatar_url}
+                  initial={(profile.username ?? profile.full_name ?? "?")[0]!.toUpperCase()}
+                  alt=""
+                  size="sm"
+                />
                 {profile.full_name || "Mi perfil"}
               </Link>
               <form action={signOut}>

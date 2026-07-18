@@ -4,7 +4,7 @@ import { FilterChipGroup } from "@/components/ui/Chip";
 import { TextField } from "@/components/ui/TextField";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/ui/ProductCard";
-import type { ProductCondition } from "@/types/database";
+import type { ProductCondition, SellerPublicProfile } from "@/types/database";
 
 type CatalogRow = {
   id: number;
@@ -12,6 +12,7 @@ type CatalogRow = {
   price: number;
   zone_id: number;
   condition: ProductCondition;
+  seller_id: string;
   product_photos: { storage_path: string; is_primary: boolean }[];
 };
 
@@ -37,7 +38,7 @@ export default async function CatalogPage({
 
   let query = supabase
     .from("products")
-    .select("id, title, price, zone_id, condition, product_photos(storage_path, is_primary)")
+    .select("id, title, price, zone_id, condition, seller_id, product_photos(storage_path, is_primary)")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
@@ -58,6 +59,16 @@ export default async function CatalogPage({
 
   const { data: products } = await query.returns<CatalogRow[]>();
   const zoneNameById = new Map((zones ?? []).map((z) => [z.id, z.name]));
+
+  const sellerIds = Array.from(new Set((products ?? []).map((p) => p.seller_id)));
+  const { data: sellerProfiles } = sellerIds.length
+    ? await supabase
+        .from("seller_public_profiles")
+        .select("id, username, avatar_url")
+        .in("id", sellerIds)
+        .returns<SellerPublicProfile[]>()
+    : { data: [] as SellerPublicProfile[] };
+  const sellerById = new Map((sellerProfiles ?? []).map((s) => [s.id, s]));
 
   const categoryOptions = (categories ?? []).map((c) => ({ value: String(c.id), label: c.name }));
   const zoneOptions = (zones ?? []).map((z) => ({ value: String(z.id), label: z.name }));
@@ -132,6 +143,7 @@ export default async function CatalogPage({
         {products?.map((p) => {
           const primaryPhoto =
             p.product_photos.find((ph) => ph.is_primary) ?? p.product_photos[0];
+          const sellerProfile = sellerById.get(p.seller_id);
 
           return (
             <li key={p.id}>
@@ -143,6 +155,8 @@ export default async function CatalogPage({
                   condition: p.condition,
                   zoneName: zoneNameById.get(p.zone_id),
                   photoPath: primaryPhoto?.storage_path ?? null,
+                  sellerUsername: sellerProfile?.username ?? null,
+                  sellerAvatarPath: sellerProfile?.avatar_url ?? null,
                 }}
               />
             </li>

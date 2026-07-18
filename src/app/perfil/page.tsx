@@ -4,8 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { isSellerMpConnected } from "@/lib/mercadopago/tokens";
 import { connectMercadoPago, updateProfile } from "./actions";
+import { MAX_AVATAR_SIZE_BYTES, USERNAME_PATTERN } from "@/lib/avatar-photo";
 import { TextField } from "@/components/ui/TextField";
 import { Select } from "@/components/ui/Select";
+import { AvatarCropField } from "@/components/ui/AvatarCropField";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 
@@ -33,6 +35,23 @@ export default async function ProfilePage({
       {saved && <Alert variant="ok">Perfil actualizado.</Alert>}
 
       <form action={updateProfile} className="flex flex-col gap-1">
+        <AvatarCropField
+          name="avatar"
+          label="Foto de perfil"
+          hint={`Formato JPG o PNG, hasta ${(MAX_AVATAR_SIZE_BYTES / 1024 / 1024).toFixed(0)}MB. Vas a poder ajustar el encuadre antes de guardar.`}
+          maxSizeBytes={MAX_AVATAR_SIZE_BYTES}
+          currentAvatarPath={profile.avatar_url}
+          placeholderInitial={(profile.username ?? profile.full_name ?? "?")[0]!.toUpperCase()}
+        />
+        <TextField
+          name="username"
+          label="Nombre de usuario"
+          defaultValue={profile.username ?? ""}
+          pattern={USERNAME_PATTERN.source}
+          minLength={3}
+          maxLength={20}
+          hint="Solo letras, números y guion bajo. Entre 3 y 20 caracteres."
+        />
         <TextField
           name="full_name"
           label="Nombre completo"
