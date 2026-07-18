@@ -244,3 +244,30 @@ Todo esto surgió de una sesión larga de debugging del primer deploy a Vercel. 
 - **Síntoma:** los logs de Auth de Supabase muestran `referer: http://localhost:3000` aunque el request real venga del dominio de producción.
 - **Causa:** Authentication → URL Configuration → **Site URL** queda en `http://localhost:3000` por defecto al crear el proyecto, y GoTrue lo usa como fallback si la URL de `emailRedirectTo` que manda la app no está en la lista de "Redirect URLs" permitidas — sin importar que el código arme bien la URL (ver `src/lib/site-url.ts`).
 - **Fix:** en el dashboard de Supabase, actualizar **Site URL** al dominio real de producción, y agregar ese dominio (con wildcard, ej. `https://feria-mendoza.vercel.app/**`) a **Redirect URLs**.
+
+---
+
+## 12. Extensión post-lanzamiento (Fases F–J)
+
+Continuación de las fases del punto 9, pensada para después del lanzamiento inicial del MVP. Mismo criterio: cada fase entrega algo demostrable y no requiere que las siguientes estén hechas.
+
+### Fase F — Perfil de usuario
+- Foto de perfil del usuario, en bucket de Supabase Storage **público** (a diferencia del bucket de DNI, que es privado y requiere URL firmada)
+- Username único por usuario
+- Foto de perfil y username visibles en tarjeta de producto (catálogo) y en vista de detalle de producto
+
+### Fase G — Categorías
+- Categoría **Ropa** con sub-categorías organizadas por género/edad estilo mega-menú: Mujer / Hombre / Kids, cada una con Belleza, Accesorios, Calzado, Ropa
+- Categorías nuevas de primer nivel: Electro, Herramientas, Hogar y Jardín, Juguetes, Muebles
+- Categorías **Autos** e **Inmuebles** con campos propios específicos del rubro (Autos: km, año; Inmuebles: ambientes, m²) — no aplican al resto de categorías
+
+### Fase H — Filtros del catálogo
+- Mover los filtros del catálogo (categoría, zona, condición, precio, texto) de su ubicación actual a un panel lateral
+
+### Fase I — Reputación y reseñas
+- Un comprador puede dejar una reseña a un vendedor solo si tiene una compra confirmada de ese vendedor (`orders.status = 'paid'` o un estado posterior en el flujo: `delivered`, `resolved`)
+- Reputación promedio y cantidad de ventas del vendedor, visibles en tarjeta de producto y en vista de detalle
+
+### Fase J — Carrito multi-vendedor
+- El carrito se agrupa por vendedor: el modelo de split vía OAuth de Mercado Pago no permite pagarle a 2 vendedores distintos en una sola transacción
+- Un pago por vendedor, ejecutado en secuencia, pero presentado al comprador como un solo flujo de checkout (no como carritos separados)
