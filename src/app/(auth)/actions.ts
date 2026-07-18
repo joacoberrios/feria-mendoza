@@ -28,7 +28,7 @@ export async function signUp(formData: FormData) {
   const supabase = await createClient();
   const siteUrl = await getSiteUrl();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -38,6 +38,13 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     redirect(`/register?error=${encodeURIComponent(logAndFormatAuthError("signUp", error))}`);
+  }
+
+  // Con "Confirm email" desactivado en Supabase, signUp ya devuelve
+  // sesión creada — no hay ningún email que esperar, así que mandar a
+  // "Revisá tu correo" sería un callejón sin salida para el usuario.
+  if (data.session) {
+    redirect("/");
   }
 
   redirect(`/verify-email?email=${encodeURIComponent(email)}`);
