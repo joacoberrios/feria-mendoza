@@ -4,10 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { isSellerMpConnected } from "@/lib/mercadopago/tokens";
 import { connectMercadoPago, updateProfile } from "./actions";
-import { MAX_AVATAR_SIZE_BYTES, USERNAME_PATTERN } from "@/lib/avatar-photo";
+import { MAX_AVATAR_SIZE_BYTES } from "@/lib/avatar-photo";
 import { DNI_NUMBER_PATTERN } from "@/lib/identity";
 import { hasDniNumber } from "@/lib/supabase/dni-number";
 import { TextField } from "@/components/ui/TextField";
+import { UsernameField } from "@/components/ui/UsernameField";
 import { Select } from "@/components/ui/Select";
 import { AvatarCropField } from "@/components/ui/AvatarCropField";
 import { Button } from "@/components/ui/Button";
@@ -46,13 +47,10 @@ export default async function ProfilePage({
           currentAvatarPath={profile.avatar_url}
           placeholderInitial={(profile.username ?? profile.first_name ?? "?")[0]!.toUpperCase()}
         />
-        <TextField
+        <UsernameField
           name="username"
           label="Nombre de usuario"
-          defaultValue={profile.username ?? ""}
-          pattern={USERNAME_PATTERN.source}
-          minLength={3}
-          maxLength={20}
+          currentUsername={profile.username}
           hint="Solo letras, números y guion bajo. Entre 3 y 20 caracteres."
         />
         <TextField name="first_name" label="Nombre" defaultValue={profile.first_name ?? ""} required />
