@@ -2,6 +2,8 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
+import { formatFullName, formatCalendarDateEs } from "@/lib/identity";
+import { getDniNumbersByUserId } from "@/lib/supabase/dni-number";
 import { approveUser, rejectUser } from "./actions";
 
 export default async function AdminVerificationsPage() {
@@ -13,9 +15,14 @@ export default async function AdminVerificationsPage() {
   const supabase = await createClient();
   const { data: pending } = await supabase
     .from("users")
-    .select("id, full_name, email, phone, dni_photo_url, created_at")
+    .select("id, first_name, last_name, email, phone, birth_date, dni_photo_url, created_at")
     .eq("verification_status", "pending")
     .order("created_at");
+
+  // dni_number tiene el SELECT revocado para authenticated (0018) — el
+  // panel de admin es uno de los dos únicos lugares que lo lee, y lo hace
+  // aparte, con el cliente admin.
+  const dniNumberById = await getDniNumbersByUserId((pending ?? []).map((u) => u.id));
 
   const rows = await Promise.all(
     (pending ?? []).map(async (u) => {
@@ -26,7 +33,7 @@ export default async function AdminVerificationsPage() {
           .createSignedUrl(u.dni_photo_url, 60 * 5);
         photoUrl = data?.signedUrl ?? null;
       }
-      return { ...u, photoUrl };
+      return { ...u, photoUrl, dniNumber: dniNumberById.get(u.id) ?? null };
     }),
   );
 
@@ -40,7 +47,7 @@ export default async function AdminVerificationsPage() {
             {u.photoUrl ? (
               <Image
                 src={u.photoUrl}
-                alt={`Foto de DNI de ${u.full_name ?? u.email}`}
+                alt={`Foto de DNI de ${formatFullName(u) || u.email}`}
                 width={160}
                 height={112}
                 className="rounded border object-cover"
@@ -51,9 +58,16 @@ export default async function AdminVerificationsPage() {
               </div>
             )}
             <div className="flex-1">
-              <p className="font-medium">{u.full_name ?? "(sin nombre)"}</p>
+              <p className="font-medium">{formatFullName(u) || "(sin nombre)"}</p>
               <p className="text-sm text-gray-600">{u.email}</p>
               <p className="text-sm text-gray-600">{u.phone ?? "-"}</p>
+              <p className="text-sm text-gray-600">
+                DNI: {u.dniNumber ?? "no cargado"}
+                {/* birth_date es solo fecha calendario ("YYYY-MM-DD") — parsearlo con
+                    `new Date()` lo interpreta como UTC y en Argentina (UTC-3) puede
+                    mostrar un día antes. */}
+                {u.birth_date && ` · Nacimiento: ${formatCalendarDateEs(u.birth_date)}`}
+              </p>
               <div className="mt-3 flex gap-2">
                 <form action={approveUser}>
                   <input type="hidden" name="user_id" value={u.id} />

@@ -5,6 +5,8 @@ import { getCurrentProfile } from "@/lib/supabase/profile";
 import { isSellerMpConnected } from "@/lib/mercadopago/tokens";
 import { connectMercadoPago, updateProfile } from "./actions";
 import { MAX_AVATAR_SIZE_BYTES, USERNAME_PATTERN } from "@/lib/avatar-photo";
+import { DNI_NUMBER_PATTERN } from "@/lib/identity";
+import { hasDniNumber } from "@/lib/supabase/dni-number";
 import { TextField } from "@/components/ui/TextField";
 import { Select } from "@/components/ui/Select";
 import { AvatarCropField } from "@/components/ui/AvatarCropField";
@@ -21,6 +23,7 @@ export default async function ProfilePage({
   if (!profile) redirect("/login");
 
   const mpConnected = await isSellerMpConnected(profile.id);
+  const dniAlreadySaved = await hasDniNumber(profile.id);
   const supabase = await createClient();
   const { data: zones } = await supabase
     .from("zones")
@@ -41,7 +44,7 @@ export default async function ProfilePage({
           hint={`Formato JPG o PNG, hasta ${(MAX_AVATAR_SIZE_BYTES / 1024 / 1024).toFixed(0)}MB. Vas a poder ajustar el encuadre antes de guardar.`}
           maxSizeBytes={MAX_AVATAR_SIZE_BYTES}
           currentAvatarPath={profile.avatar_url}
-          placeholderInitial={(profile.username ?? profile.full_name ?? "?")[0]!.toUpperCase()}
+          placeholderInitial={(profile.username ?? profile.first_name ?? "?")[0]!.toUpperCase()}
         />
         <TextField
           name="username"
@@ -52,13 +55,28 @@ export default async function ProfilePage({
           maxLength={20}
           hint="Solo letras, números y guion bajo. Entre 3 y 20 caracteres."
         />
-        <TextField
-          name="full_name"
-          label="Nombre completo"
-          defaultValue={profile.full_name ?? ""}
-          required
-        />
+        <TextField name="first_name" label="Nombre" defaultValue={profile.first_name ?? ""} required />
+        <TextField name="last_name" label="Apellido" defaultValue={profile.last_name ?? ""} required />
         <TextField name="phone" type="tel" label="Teléfono" defaultValue={profile.phone ?? ""} />
+        <TextField
+          name="dni_number"
+          label="DNI"
+          inputMode="numeric"
+          pattern={DNI_NUMBER_PATTERN.source}
+          maxLength={8}
+          hint={
+            dniAlreadySaved
+              ? "Ya tenés un DNI guardado — dejalo vacío si no querés cambiarlo, o escribí uno nuevo para reemplazarlo."
+              : "Solo números, sin puntos (7 u 8 dígitos). Lo necesitás para verificar tu identidad."
+          }
+        />
+        <TextField
+          name="birth_date"
+          type="date"
+          label="Fecha de nacimiento"
+          defaultValue={profile.birth_date ?? ""}
+          hint="Tenés que ser mayor de 18 años para usar Feria Mendoza."
+        />
         <Select name="zone_id" label="Zona" defaultValue={profile.zone_id ?? ""} required>
           <option value="" disabled>
             Elegí tu zona

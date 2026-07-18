@@ -12,11 +12,17 @@ export type Zone = {
   active: boolean;
 };
 
+// dni_number queda afuera a propósito: el SELECT de esa columna está
+// revocado para anon/authenticated (0018_identity_fields.sql), así que
+// nunca puede formar parte de lo que devuelve el cliente normal — leerlo
+// requiere el cliente admin (ver src/lib/supabase/dni-number.ts).
 export type Profile = {
   id: string;
   email: string;
-  full_name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   phone: string | null;
+  birth_date: string | null;
   zone_id: number | null;
   role: UserRole;
   verification_status: VerificationStatus;

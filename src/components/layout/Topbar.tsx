@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { signOut } from "@/app/actions";
 import { Avatar } from "@/components/ui/Avatar";
+import { formatFullName } from "@/lib/identity";
 
 const NAV_LINK_CLASSES =
   "rounded-sm px-3 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle hover:text-ink";
@@ -10,6 +11,13 @@ const NAV_LINK_CLASSES =
 // isotipo circular con el gradiente cónico de marca.
 export async function Topbar() {
   const profile = await getCurrentProfile();
+  // Username primero (Fase F); si todavía no eligió uno, el fallback es
+  // el mismo que se mostraba antes de que existiera username.
+  const displayName = profile
+    ? profile.username
+      ? `@${profile.username}`
+      : formatFullName(profile) || "Mi perfil"
+    : null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/85 backdrop-blur-md">
@@ -83,11 +91,11 @@ export async function Topbar() {
               <Link href="/perfil" className={`flex items-center gap-2 ${NAV_LINK_CLASSES}`}>
                 <Avatar
                   avatarPath={profile.avatar_url}
-                  initial={(profile.username ?? profile.full_name ?? "?")[0]!.toUpperCase()}
+                  initial={(profile.username ?? profile.first_name ?? "?")[0]!.toUpperCase()}
                   alt=""
                   size="sm"
                 />
-                {profile.full_name || "Mi perfil"}
+                {displayName}
               </Link>
               <form action={signOut}>
                 <button

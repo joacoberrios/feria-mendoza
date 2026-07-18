@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { MAX_DNI_PHOTO_SIZE_BYTES } from "@/lib/dni-photo";
+import { isIdentityComplete } from "@/lib/identity";
+import { hasDniNumber } from "@/lib/supabase/dni-number";
 import { uploadDniPhoto } from "./actions";
 import { FileField } from "@/components/ui/FileField";
 import { Button } from "@/components/ui/Button";
@@ -17,6 +19,9 @@ export default async function VerificationPage({
   const { error, uploaded } = await searchParams;
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
+
+  const dniSaved = await hasDniNumber(profile.id);
+  const identityComplete = isIdentityComplete(profile, dniSaved);
 
   let previewUrl: string | null = null;
   if (profile.dni_photo_url) {
@@ -53,7 +58,17 @@ export default async function VerificationPage({
         />
       )}
 
-      {profile.verification_status !== "approved" && (
+      {profile.verification_status !== "approved" && !identityComplete && (
+        <Alert variant="info">
+          Completá tu nombre, apellido, DNI y fecha de nacimiento en{" "}
+          <Link href="/perfil" className="font-semibold underline">
+            tu perfil
+          </Link>{" "}
+          antes de subir la foto — el admin los necesita para poder cotejarlos contra la foto.
+        </Alert>
+      )}
+
+      {profile.verification_status !== "approved" && identityComplete && (
         <form action={uploadDniPhoto} className="flex flex-col gap-1">
           <FileField
             name="dni_photo"

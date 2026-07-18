@@ -2,7 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/supabase/profile";
 import { MAX_DNI_PHOTO_SIZE_BYTES } from "@/lib/dni-photo";
+import { isIdentityComplete } from "@/lib/identity";
+import { hasDniNumber } from "@/lib/supabase/dni-number";
 
 export async function uploadDniPhoto(formData: FormData) {
   const supabase = await createClient();
@@ -11,6 +14,16 @@ export async function uploadDniPhoto(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  // Respaldo del gate que ya muestra/oculta el form en la página — nunca
+  // confiar solo en que la UI lo haya escondido.
+  const profile = await getCurrentProfile();
+  const dniSaved = await hasDniNumber(user.id);
+  if (!profile || !isIdentityComplete(profile, dniSaved)) {
+    redirect(
+      `/verificacion?error=${encodeURIComponent("Completá tu nombre, apellido, DNI y fecha de nacimiento en tu perfil antes de subir la foto.")}`,
+    );
+  }
 
   const file = formData.get("dni_photo");
   if (!(file instanceof File) || file.size === 0) {

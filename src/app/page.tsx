@@ -1,4 +1,5 @@
 import { getCurrentProfile } from "@/lib/supabase/profile";
+import { formatFullName } from "@/lib/identity";
 import { ButtonLink } from "@/components/ui/Button";
 
 export default async function Home() {
@@ -23,7 +24,7 @@ export default async function Home() {
         </h1>
         <p className="relative z-10 mt-4 max-w-[56ch] text-[1.05rem] text-ink-soft">
           {profile
-            ? `Hola, ${profile.full_name || profile.email} — publicá productos gratis y comprá con Mercado Pago.`
+            ? `Hola, ${formatFullName(profile) || profile.email} — publicá productos gratis y comprá con Mercado Pago.`
             : "Publicá gratis, encontrá lo que buscás y pagá seguro con Mercado Pago."}
         </p>
         <div className="relative z-10 mt-6 flex flex-wrap gap-3.5">
