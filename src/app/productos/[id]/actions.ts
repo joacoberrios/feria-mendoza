@@ -78,7 +78,7 @@ export async function createCheckout(formData: FormData) {
   // redirect — si quedara dentro del try/catch de abajo, este catch la
   // interceptaría como si fuera un error real. Por eso la creación de la
   // preferencia va en su propio try/catch y el redirect final queda afuera.
-  let sandboxInitPoint: string;
+  let checkoutUrl: string;
   try {
     const preference = await createCheckoutPreference({
       sellerAccessToken,
@@ -92,7 +92,8 @@ export async function createCheckout(formData: FormData) {
     const admin = createAdminClient();
     await admin.from("orders").update({ mp_preference_id: preference.id }).eq("id", order.id);
 
-    sandboxInitPoint = preference.sandbox_init_point;
+    // En producción MP devuelve init_point; en sandbox devuelve sandbox_init_point.
+    checkoutUrl = preference.init_point ?? preference.sandbox_init_point;
   } catch (err) {
     console.error("[mercadopago:checkout] error creando la preferencia:", err);
     redirect(
@@ -100,5 +101,5 @@ export async function createCheckout(formData: FormData) {
     );
   }
 
-  redirect(sandboxInitPoint);
+  redirect(checkoutUrl);
 }
