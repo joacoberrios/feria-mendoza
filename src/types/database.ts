@@ -121,6 +121,31 @@ export type Order = {
   created_at: string;
 };
 
+// ============================================================ Reseñas (Fase I)
+
+export type Review = {
+  id: number;
+  order_id: number;
+  reviewer_id: string;
+  seller_id: string;
+  rating: number;
+  comment: string | null;
+  seller_response: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ReviewWithReviewer = Review & {
+  reviewer: SellerPublicProfile | null;
+};
+
+export type SellerReputation = {
+  seller_id: string;
+  confirmed_sales: number;
+  review_count: number;
+  avg_rating: number | null;
+};
+
 // ============================================================ Bandeja social
 
 export type SocialPlatform = "instagram" | "whatsapp";

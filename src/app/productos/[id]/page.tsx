@@ -10,7 +10,9 @@ import { Chip } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { SellerBadge } from "@/components/ui/SellerBadge";
-import type { SellerPublicProfile } from "@/types/database";
+import { StarRating } from "@/components/ui/StarRating";
+import { ReviewsSection } from "@/components/ui/ReviewsSection";
+import type { SellerPublicProfile, SellerReputation, ReviewWithReviewer } from "@/types/database";
 
 type ProductDetailRow = {
   id: number;
@@ -24,15 +26,17 @@ type ProductDetailRow = {
   product_photos: { storage_path: string; is_primary: boolean; position: number }[];
 };
 
+type UnreviewedOrder = { id: number; product_title: string };
+
 export default async function ProductDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; review_ok?: string; review_error?: string }>;
 }) {
   const { id } = await params;
-  const { error } = await searchParams;
+  const { error, review_ok, review_error } = await searchParams;
   const supabase = await createClient();
 
   const { data: product } = await supabase
@@ -55,11 +59,67 @@ export default async function ProductDetailPage({
   const isOwner = profile?.id === product.seller_id;
   const sellerConnected = profile && !isOwner ? await isSellerMpConnected(product.seller_id) : false;
 
-  const { data: sellerProfile } = await supabase
-    .from("seller_public_profiles")
-    .select("id, username, avatar_url")
-    .eq("id", product.seller_id)
-    .maybeSingle<SellerPublicProfile>();
+  const [sellerProfileResult, reputationResult, reviewsResult] = await Promise.all([
+    supabase
+      .from("seller_public_profiles")
+      .select("id, username, avatar_url")
+      .eq("id", product.seller_id)
+      .maybeSingle<SellerPublicProfile>(),
+    supabase
+      .from("seller_reputation")
+      .select("seller_id, confirmed_sales, review_count, avg_rating")
+      .eq("seller_id", product.seller_id)
+      .maybeSingle<SellerReputation>(),
+    supabase
+      .from("reviews")
+      .select("*")
+      .eq("seller_id", product.seller_id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const sellerProfile = sellerProfileResult.data;
+  const reputation = reputationResult.data;
+  const rawReviews = reviewsResult.data ?? [];
+
+  // Fetch reviewer profiles in one batch
+  const reviewerIds = [...new Set(rawReviews.map((r) => r.reviewer_id as string))];
+  let reviewerMap: Record<string, SellerPublicProfile> = {};
+  if (reviewerIds.length > 0) {
+    const { data: reviewerProfiles } = await supabase
+      .from("seller_public_profiles")
+      .select("id, username, avatar_url")
+      .in("id", reviewerIds);
+    reviewerMap = Object.fromEntries(
+      (reviewerProfiles ?? []).map((p) => [p.id, p as SellerPublicProfile]),
+    );
+  }
+
+  const reviews: ReviewWithReviewer[] = rawReviews.map((r) => ({
+    ...(r as import("@/types/database").Review),
+    reviewer: reviewerMap[r.reviewer_id as string] ?? null,
+  }));
+
+  // Órdenes del usuario actual con este vendedor que aún no tienen reseña
+  let unreviewedOrders: UnreviewedOrder[] = [];
+  if (profile && !isOwner) {
+    const { data: orders } = await supabase
+      .from("orders")
+      .select("id, products(title)")
+      .eq("buyer_id", profile.id)
+      .eq("seller_id", product.seller_id)
+      .in("status", ["paid", "delivered", "disputed", "resolved"]);
+
+    if (orders) {
+      const reviewedOrderIds = new Set(reviews.map((r) => r.order_id));
+      unreviewedOrders = orders
+        .filter((o) => !reviewedOrderIds.has(o.id))
+        .map((o) => ({
+          id: o.id,
+          product_title:
+            (o.products as unknown as { title: string } | null)?.title ?? "Producto",
+        }));
+    }
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
@@ -91,12 +151,25 @@ export default async function ProductDetailPage({
         ${product.price.toLocaleString("es-AR")}
       </p>
 
-      <div className="mt-3">
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <SellerBadge
           username={sellerProfile?.username ?? null}
           avatarPath={sellerProfile?.avatar_url ?? null}
           size="md"
         />
+        {reputation && reputation.review_count > 0 && (
+          <StarRating
+            rating={reputation.avg_rating}
+            count={reputation.review_count}
+            size="md"
+          />
+        )}
+        {reputation && reputation.confirmed_sales > 0 && (
+          <span className="text-xs text-ink-soft">
+            {reputation.confirmed_sales}{" "}
+            {reputation.confirmed_sales === 1 ? "venta" : "ventas"}
+          </span>
+        )}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -124,6 +197,17 @@ export default async function ProductDetailPage({
           </p>
         )}
       </div>
+
+      <ReviewsSection
+        reviews={reviews}
+        sellerId={product.seller_id}
+        productId={product.id}
+        currentUserId={profile?.id ?? null}
+        isOwner={isOwner}
+        unreviewedOrders={unreviewedOrders}
+        reviewOk={review_ok === "1"}
+        reviewError={review_error ?? null}
+      />
     </main>
   );
 }
