@@ -2,9 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { fetchCategoryTree } from "@/lib/categories";
-import { signOut } from "@/app/actions";
-import { Avatar } from "@/components/ui/Avatar";
 import { formatFullName } from "@/lib/identity";
+import { UserMenu } from "@/components/layout/UserMenu";
 import type { Category } from "@/types/database";
 
 const NAV_LINK_CLASSES =
@@ -130,44 +129,15 @@ export async function Topbar() {
           )}
         </nav>
 
-        {/* Zona derecha: acciones de usuario + auth */}
-        <div className="ml-auto flex items-center gap-1">
+        {/* Zona derecha */}
+        <div className="ml-auto flex items-center gap-2">
           {profile ? (
-            <>
-              <Link href="/publicar" className={NAV_LINK_CLASSES}>
-                Publicar
-              </Link>
-              <Link href="/mis-publicaciones" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
-                Mis pub.
-              </Link>
-              {profile.role === "admin" && (
-                <>
-                  <Link href="/admin/verificaciones" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
-                    Verif.
-                  </Link>
-                  <Link href="/admin/planes" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
-                    Planes
-                  </Link>
-                </>
-              )}
-              <Link href="/perfil" className={`flex items-center gap-2 ${NAV_LINK_CLASSES}`}>
-                <Avatar
-                  avatarPath={profile.avatar_url}
-                  initial={(profile.username ?? profile.first_name ?? "?")[0]!.toUpperCase()}
-                  alt=""
-                  size="sm"
-                />
-                <span className="hidden md:inline">{displayName}</span>
-              </Link>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="hidden rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 md:block"
-                >
-                  Salir
-                </button>
-              </form>
-            </>
+            <UserMenu
+              displayName={displayName ?? "Mi perfil"}
+              avatarPath={profile.avatar_url}
+              initial={(profile.username ?? profile.first_name ?? "?")[0]!.toUpperCase()}
+              isAdmin={profile.role === "admin"}
+            />
           ) : (
             <>
               <Link
