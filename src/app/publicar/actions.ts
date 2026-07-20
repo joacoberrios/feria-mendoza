@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { MAX_PRODUCT_PHOTOS, MAX_PRODUCT_PHOTO_SIZE_BYTES } from "@/lib/product-photo";
+import { isSelectableLeaf } from "@/lib/categories";
 
 const ALLOWED_CONDITIONS = ["nuevo", "como_nuevo", "usado"];
 
@@ -55,6 +56,12 @@ export async function createProduct(formData: FormData) {
   const resolvedPrimaryIndex = primaryIndex === -1 ? 0 : primaryIndex;
 
   const supabase = await createClient();
+
+  // Solo hojas activas: un padre (Mujer/Hombre/Kids) o una categoría
+  // desactivada no son válidos aunque alguien fuerce el form.
+  if (!(await isSelectableLeaf(supabase, categoryId))) {
+    redirect(`/publicar?error=${encodeURIComponent("Elegí una categoría válida")}`);
+  }
 
   // El canal Web/App no cobra por publicar (100% comisión, cobrada recién
   // en Fase 4 vía split de Mercado Pago al momento de la venta), así que

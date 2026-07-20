@@ -1,16 +1,50 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
+import { fetchCategoryTree } from "@/lib/categories";
 import { signOut } from "@/app/actions";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatFullName } from "@/lib/identity";
+import type { Category } from "@/types/database";
 
 const NAV_LINK_CLASSES =
   "rounded-sm px-3 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle hover:text-ink";
+
+// Dropdown CSS-only (hover + focus-within, sin JS): el Topbar sigue
+// siendo Server Component. El wrapper con pt-1 mantiene el hover continuo
+// entre el trigger y el panel (sin hueco que cierre el menú en el medio).
+function NavDropdown({
+  trigger,
+  items,
+}: {
+  trigger: React.ReactNode;
+  items: Category[];
+}) {
+  return (
+    <div className="group relative">
+      {trigger}
+      <div className="absolute top-full left-0 z-50 hidden pt-1 group-focus-within:block group-hover:block">
+        <div className="min-w-44 rounded-lg border border-border bg-surface p-1.5 shadow-lg">
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={`/productos?category_id=${item.id}`}
+              className="block rounded-sm px-3 py-2 text-sm text-ink-soft hover:bg-bg-subtle hover:text-ink hover:no-underline"
+            >
+              {item.name}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Ver sección 07 de docs/design-system.html — header sticky con blur,
 // isotipo circular con el gradiente cónico de marca.
 export async function Topbar() {
   const profile = await getCurrentProfile();
+  const categoryTree = await fetchCategoryTree(await createClient());
   // Username primero (Fase F); si todavía no eligió uno, el fallback es
   // el mismo que se mostraba antes de que existiera username.
   const displayName = profile
@@ -59,10 +93,40 @@ export async function Topbar() {
           </span>
         </Link>
 
-        <nav aria-label="Principal" className="ml-2 flex items-center gap-1">
+        <nav aria-label="Principal" className="ml-2 hidden items-center gap-1 md:flex">
           <Link href="/productos" className={NAV_LINK_CLASSES}>
             Catálogo
           </Link>
+          {categoryTree.parents.map((parent) => (
+            <NavDropdown
+              key={parent.id}
+              trigger={
+                <Link
+                  href={`/productos?category_id=${parent.id}`}
+                  className={`flex items-center gap-1 ${NAV_LINK_CLASSES}`}
+                >
+                  {parent.name}
+                  <span aria-hidden="true" className="text-[.6rem]">
+                    ▾
+                  </span>
+                </Link>
+              }
+              items={parent.children}
+            />
+          ))}
+          {categoryTree.generics.length > 0 && (
+            <NavDropdown
+              trigger={
+                <button type="button" className={`flex items-center gap-1 ${NAV_LINK_CLASSES}`}>
+                  Más
+                  <span aria-hidden="true" className="text-[.6rem]">
+                    ▾
+                  </span>
+                </button>
+              }
+              items={categoryTree.generics}
+            />
+          )}
           {profile && (
             <>
               <Link href="/publicar" className={NAV_LINK_CLASSES}>

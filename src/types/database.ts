@@ -45,6 +45,10 @@ export type Category = {
   id: number;
   name: string;
   active: boolean;
+  // Jerarquía de 2 niveles (0019): null = primer nivel. Un primer nivel
+  // con hijas es "padre" (Mujer/Hombre/Kids, no elegible para productos);
+  // sin hijas es "genérica" (Electro, Muebles...). Las hijas son hojas.
+  parent_id: number | null;
 };
 
 export type ProductCondition = "nuevo" | "como_nuevo" | "usado";

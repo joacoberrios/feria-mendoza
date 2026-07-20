@@ -2,11 +2,13 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { CONDITION_LABELS, CONDITION_TONES } from "@/lib/product-labels";
+import { fetchCategoryTree } from "@/lib/categories";
 import type { Product } from "@/types/database";
 import { updateProduct } from "./actions";
 import { TextField } from "@/components/ui/TextField";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
+import { CategorySelect } from "@/components/ui/CategorySelect";
 import { ChipRadioGroup } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
@@ -33,8 +35,8 @@ export default async function EditProductPage({
 
   if (!product) notFound();
 
-  const [{ data: categories }, { data: zones }] = await Promise.all([
-    supabase.from("categories").select("id, name").eq("active", true).order("name"),
+  const [categoryTree, { data: zones }] = await Promise.all([
+    fetchCategoryTree(supabase),
     supabase.from("zones").select("id, name").eq("active", true).order("name"),
   ]);
 
@@ -69,13 +71,7 @@ export default async function EditProductPage({
           defaultValue={product.price}
           required
         />
-        <Select name="category_id" label="Categoría" defaultValue={product.category_id} required>
-          {categories?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
+        <CategorySelect tree={categoryTree} defaultCategoryId={product.category_id} />
         <Select name="zone_id" label="Zona" defaultValue={product.zone_id} required>
           {zones?.map((z) => (
             <option key={z.id} value={z.id}>

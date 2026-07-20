@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isSelectableLeaf } from "@/lib/categories";
 
 const ALLOWED_CONDITIONS = ["nuevo", "como_nuevo", "usado"];
 
@@ -30,6 +31,13 @@ export async function updateProduct(formData: FormData) {
   ) {
     redirect(
       `/mis-publicaciones/${productId}/editar?error=${encodeURIComponent("Completá todos los campos requeridos")}`,
+    );
+  }
+
+  // Solo hojas activas (Fase G) — mismo respaldo que en createProduct.
+  if (!(await isSelectableLeaf(supabase, categoryId))) {
+    redirect(
+      `/mis-publicaciones/${productId}/editar?error=${encodeURIComponent("Elegí una categoría válida")}`,
     );
   }
 

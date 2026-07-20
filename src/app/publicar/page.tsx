@@ -3,10 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { MAX_PRODUCT_PHOTOS, MAX_PRODUCT_PHOTO_SIZE_BYTES } from "@/lib/product-photo";
 import { CONDITION_LABELS, CONDITION_TONES } from "@/lib/product-labels";
+import { fetchCategoryTree } from "@/lib/categories";
 import { createProduct } from "./actions";
 import { TextField } from "@/components/ui/TextField";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
+import { CategorySelect } from "@/components/ui/CategorySelect";
 import { FileField } from "@/components/ui/FileField";
 import { ChipRadioGroup } from "@/components/ui/Chip";
 import { Button } from "@/components/ui/Button";
@@ -28,8 +30,8 @@ export default async function PublishProductPage({
   }
 
   const supabase = await createClient();
-  const [{ data: categories }, { data: zones }] = await Promise.all([
-    supabase.from("categories").select("id, name").eq("active", true).order("name"),
+  const [categoryTree, { data: zones }] = await Promise.all([
+    fetchCategoryTree(supabase),
     supabase.from("zones").select("id, name").eq("active", true).order("name"),
   ]);
 
@@ -49,16 +51,7 @@ export default async function PublishProductPage({
         <TextField name="title" label="Título" required />
         <Textarea name="description" label="Descripción" rows={4} required />
         <TextField name="price" type="number" label="Precio" min="0" step="0.01" required />
-        <Select name="category_id" label="Categoría" defaultValue="" required>
-          <option value="" disabled>
-            Elegí una categoría
-          </option>
-          {categories?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
+        <CategorySelect tree={categoryTree} />
         <Select name="zone_id" label="Zona" defaultValue="" required>
           <option value="" disabled>
             Elegí tu zona
