@@ -93,6 +93,7 @@ export async function Topbar() {
           </span>
         </Link>
 
+        {/* Nav izquierda: solo categorías */}
         <nav aria-label="Principal" className="ml-2 hidden items-center gap-1 md:flex">
           <Link href="/productos" className={NAV_LINK_CLASSES}>
             Catálogo
@@ -127,31 +128,28 @@ export async function Topbar() {
               items={categoryTree.generics}
             />
           )}
-          {profile && (
+        </nav>
+
+        {/* Zona derecha: acciones de usuario + auth */}
+        <div className="ml-auto flex items-center gap-1">
+          {profile ? (
             <>
               <Link href="/publicar" className={NAV_LINK_CLASSES}>
                 Publicar
               </Link>
-              <Link href="/mis-publicaciones" className={NAV_LINK_CLASSES}>
-                Mis publicaciones
+              <Link href="/mis-publicaciones" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
+                Mis pub.
               </Link>
               {profile.role === "admin" && (
                 <>
-                  <Link href="/admin/verificaciones" className={NAV_LINK_CLASSES}>
-                    Verificaciones
+                  <Link href="/admin/verificaciones" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
+                    Verif.
                   </Link>
-                  <Link href="/admin/planes" className={NAV_LINK_CLASSES}>
+                  <Link href="/admin/planes" className={`hidden md:block ${NAV_LINK_CLASSES}`}>
                     Planes
                   </Link>
                 </>
               )}
-            </>
-          )}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-3">
-          {profile ? (
-            <>
               <Link href="/perfil" className={`flex items-center gap-2 ${NAV_LINK_CLASSES}`}>
                 <Avatar
                   avatarPath={profile.avatar_url}
@@ -159,14 +157,14 @@ export async function Topbar() {
                   alt=""
                   size="sm"
                 />
-                {displayName}
+                <span className="hidden md:inline">{displayName}</span>
               </Link>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+                  className="hidden rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 md:block"
                 >
-                  Cerrar sesión
+                  Salir
                 </button>
               </form>
             </>

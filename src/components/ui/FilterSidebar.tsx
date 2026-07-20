@@ -78,20 +78,22 @@ export function FilterSidebar({ activeFilterCount, children }: Props) {
     }
   }, [isOpen, isMobile]);
 
+  // Mobile: hidden by default, fixed drawer when open.
+  // Desktop: always visible as a left sidebar (no toggle needed).
   const panelClasses = isOpen
-    ? "block fixed inset-y-0 left-0 w-80 z-[70] bg-surface shadow-xl overflow-y-auto md:relative md:inset-auto md:w-64 md:z-auto md:shadow-none md:overflow-visible md:shrink-0"
-    : "hidden md:hidden";
+    ? "block fixed inset-y-0 left-0 w-80 z-[70] bg-surface shadow-xl overflow-y-auto"
+    : "hidden md:block md:w-64 md:shrink-0";
 
   return (
     <>
-      {/* Botón trigger */}
+      {/* Botón trigger — solo visible en mobile; en desktop el panel siempre está visible */}
       <button
         ref={triggerRef}
         type="button"
         onClick={() => setIsOpen((o) => !o)}
         aria-expanded={isOpen}
         aria-controls="filter-panel"
-        className="mb-4 flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 md:mb-0"
+        className="mb-4 flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 md:hidden"
       >
         <svg
           viewBox="0 0 16 16"
@@ -134,7 +136,7 @@ export function FilterSidebar({ activeFilterCount, children }: Props) {
           ? { role: "dialog", "aria-modal": "true", "aria-label": "Filtros" }
           : {})}
       >
-        <div className="flex items-center justify-between border-b border-border p-4 md:hidden">
+        <div className="flex items-center justify-between border-b border-border p-4 md:hidden" aria-hidden="true">
           <span className="font-medium text-ink">Filtros</span>
           <button
             type="button"
