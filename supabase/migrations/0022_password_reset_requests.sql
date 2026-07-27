@@ -5,7 +5,7 @@
 
 create table public.password_reset_requests (
   id               bigint generated always as identity primary key,
-  user_id          uuid not null unique references auth.users (id) on delete cascade,
+  user_id          uuid not null unique references public.users (id) on delete cascade,
   pending_password text not null,
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now()

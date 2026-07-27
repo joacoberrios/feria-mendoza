@@ -35,7 +35,7 @@ export async function submitPasswordReset(formData: FormData) {
 
   if (userRow) {
     // Upsert: si ya había una solicitud pendiente, se sobreescribe.
-    await admin.from("password_reset_requests").upsert(
+    const { error: upsertError } = await admin.from("password_reset_requests").upsert(
       {
         user_id: userRow.id,
         pending_password: password,
@@ -43,6 +43,9 @@ export async function submitPasswordReset(formData: FormData) {
       },
       { onConflict: "user_id" },
     );
+    if (upsertError) {
+      console.error("[password-reset:submit] error al guardar solicitud:", upsertError);
+    }
   }
   // Si el email no existe, no hacemos nada — mismo mensaje igual.
 
