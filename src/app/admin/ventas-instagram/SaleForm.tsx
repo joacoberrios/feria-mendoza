@@ -47,16 +47,35 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
           />
         </label>
 
-        <label className="flex flex-col gap-1 text-sm font-medium text-ink">
-          Contacto
-          <input
-            name="seller_contact"
-            type="text"
-            required
-            placeholder="Teléfono, @instagram o email"
-            className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
-          />
-        </label>
+        <div className="grid grid-cols-3 gap-3">
+          <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+            Teléfono
+            <input
+              name="contact_phone"
+              type="text"
+              placeholder="Ej: 2616637057"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+            Instagram
+            <input
+              name="contact_instagram"
+              type="text"
+              placeholder="Ej: @usuario"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+            Email
+            <input
+              name="contact_email"
+              type="email"
+              placeholder="Ej: mail@ejemplo.com"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            />
+          </label>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium text-ink">

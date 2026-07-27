@@ -9,14 +9,27 @@ export async function registerInstagramSale(formData: FormData) {
   if (!profile || profile.role !== "admin") redirect("/");
 
   const sellerName = String(formData.get("seller_name") ?? "").trim();
-  const sellerContact = String(formData.get("seller_contact") ?? "").trim();
+  const phone = String(formData.get("contact_phone") ?? "").trim();
+  const instagram = String(formData.get("contact_instagram") ?? "").trim();
+  const email = String(formData.get("contact_email") ?? "").trim();
   const planId = Number(formData.get("plan_id"));
   const amount = parseFloat(String(formData.get("amount") ?? ""));
   const notes = String(formData.get("notes") ?? "").trim() || null;
 
-  if (!sellerName || !sellerContact || !planId || isNaN(amount) || amount <= 0) {
-    redirect("/admin/ventas-instagram?error=Completá+todos+los+campos+requeridos");
+  const contactParts = [
+    phone && `Tel: ${phone}`,
+    instagram && `IG: ${instagram}`,
+    email && `Email: ${email}`,
+  ].filter(Boolean);
+
+  if (!sellerName || contactParts.length === 0 || !planId || isNaN(amount) || amount <= 0) {
+    redirect(
+      "/admin/ventas-instagram?error=" +
+        encodeURIComponent("Completá el nombre, al menos un dato de contacto y el monto."),
+    );
   }
+
+  const sellerContact = contactParts.join(" | ");
 
   const supabase = await createClient();
   const { error } = await supabase.from("instagram_sales").insert({
