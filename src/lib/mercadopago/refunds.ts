@@ -18,6 +18,11 @@ export async function issueRefund(
     return { ok: false, error: "No se pudo obtener el token del vendedor. Puede que haya revocado el acceso a Mercado Pago." };
   }
 
+  // UUID v4 único por intento — MP lo exige para idempotencia. Si la red
+  // reintenta la misma llamada con el mismo key, MP la deduplica y no
+  // emite un segundo reembolso. Cada llamada a issueRefund genera uno nuevo.
+  const idempotencyKey = crypto.randomUUID();
+
   let res: Response;
   try {
     res = await fetch(`${MP_API_URL}/v1/payments/${mpPaymentId}/refunds`, {
@@ -25,6 +30,7 @@ export async function issueRefund(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sellerToken}`,
+        "X-Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify({}),
     });
