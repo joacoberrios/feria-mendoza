@@ -83,6 +83,9 @@ export function UserMenu({ displayName, avatarPath, initial, isAdmin }: Props) {
               <Link href="/admin/restablecer-contrasenas" onClick={() => setOpen(false)} className={ITEM}>
                 Contraseñas
               </Link>
+              <Link href="/admin/ventas-instagram" onClick={() => setOpen(false)} className={ITEM}>
+                Ventas Instagram
+              </Link>
             </>
           )}
 
