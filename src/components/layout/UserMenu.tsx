@@ -61,6 +61,9 @@ export function UserMenu({ displayName, avatarPath, initial, isAdmin }: Props) {
           <Link href="/mis-publicaciones" onClick={() => setOpen(false)} className={ITEM}>
             Mis publicaciones
           </Link>
+          <Link href="/mis-compras" onClick={() => setOpen(false)} className={ITEM}>
+            Mis compras
+          </Link>
           <Link href="/perfil" onClick={() => setOpen(false)} className={ITEM}>
             Mi perfil
           </Link>
@@ -73,6 +76,9 @@ export function UserMenu({ displayName, avatarPath, initial, isAdmin }: Props) {
               </Link>
               <Link href="/admin/planes" onClick={() => setOpen(false)} className={ITEM}>
                 Planes
+              </Link>
+              <Link href="/admin/disputas" onClick={() => setOpen(false)} className={ITEM}>
+                Disputas
               </Link>
             </>
           )}
