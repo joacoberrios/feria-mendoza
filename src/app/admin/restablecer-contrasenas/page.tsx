@@ -3,7 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { formatFullName } from "@/lib/identity";
 import { Alert } from "@/components/ui/Alert";
-import { ConfirmButton } from "@/components/ui/ConfirmButton";
+import { Button } from "@/components/ui/Button";
+import { WhatsAppContact } from "./WhatsAppContact";
 import { approvePasswordReset, rejectPasswordReset } from "./actions";
 
 type RequestRow = {
@@ -84,31 +85,31 @@ export default async function AdminRestablecerContrasenasPage({
                 })}
               </p>
 
-              <p className="mt-3 text-xs text-ink-soft italic">
-                Verificá la identidad del usuario por WhatsApp o teléfono antes de aprobar.
-              </p>
+              {user?.phone ? (
+                <WhatsAppContact
+                  name={displayName}
+                  phone={user.phone}
+                  email={user.email ?? ""}
+                />
+              ) : (
+                <p className="mt-3 text-xs text-ink-soft italic">
+                  Este usuario no tiene teléfono registrado. Verificá su identidad antes de aprobar.
+                </p>
+              )}
 
-              <div className="mt-3 flex gap-2">
+              <div className="mt-4 flex gap-2">
                 <form action={approvePasswordReset}>
                   <input type="hidden" name="request_id" value={req.id} />
-                  <ConfirmButton
-                    confirmMessage={`¿Confirmar el cambio de contraseña para ${displayName}? Asegurate de haber verificado su identidad primero.`}
-                    variant="primary"
-                    size="sm"
-                  >
+                  <Button type="submit" size="sm">
                     Aprobar
-                  </ConfirmButton>
+                  </Button>
                 </form>
 
                 <form action={rejectPasswordReset}>
                   <input type="hidden" name="request_id" value={req.id} />
-                  <ConfirmButton
-                    confirmMessage={`¿Rechazar la solicitud de ${displayName}? La solicitud se descartará sin ningún cambio.`}
-                    variant="ghost"
-                    size="sm"
-                  >
+                  <Button type="submit" variant="ghost" size="sm">
                     Rechazar
-                  </ConfirmButton>
+                  </Button>
                 </form>
               </div>
             </li>
