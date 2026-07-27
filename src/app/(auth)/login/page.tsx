@@ -39,6 +39,11 @@ export default async function LoginPage({
           Crear cuenta
         </Link>
       </p>
+      <p className="mt-2 text-sm text-ink-soft">
+        <Link href="/recuperar-contrasena" className="text-azul-deep underline">
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </p>
     </main>
   );
 }
