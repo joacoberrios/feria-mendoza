@@ -113,7 +113,7 @@ export default async function AdminDisputasPage() {
               </div>
 
               {d.comment && (
-                <p className="mt-2 text-sm text-ink-soft italic">"{d.comment}"</p>
+                <p className="mt-2 text-sm text-ink-soft italic">&quot;{d.comment}&quot;</p>
               )}
 
               {d.resolution_notes && (
