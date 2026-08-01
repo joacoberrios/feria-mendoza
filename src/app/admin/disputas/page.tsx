@@ -21,11 +21,11 @@ const STATUS_LABELS: Record<string, string> = {
   refund_failed: "Reembolso fallido",
 };
 
-const STATUS_TONES: Record<string, "terra" | "azul" | "menta" | "line"> = {
+const STATUS_TONES: Record<string, "terra" | "azul" | "verde" | "line"> = {
   open:          "terra",
   in_review:     "azul",
-  resolved:      "menta",
-  refunded:      "menta",
+  resolved:      "verde",
+  refunded:      "verde",
   refund_failed: "terra",
 };
 

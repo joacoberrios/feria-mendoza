@@ -1,22 +1,20 @@
 import type { ReactNode } from "react";
 
-export type ChipTone = "terra" | "azul" | "menta" | "lav" | "ciruela" | "line" | "carmin" | "verde" | "dorado";
+export type ChipTone = "terra" | "azul" | "verde" | "line" | "carmin" | "dorado";
 
 const TONE_CLASSES: Record<ChipTone, string> = {
-  terra: "bg-[#f6e3d8] text-terracota-deep",
-  azul: "bg-[#e0e5f4] text-azul-deep",
-  menta: "bg-[#d9f0e7] text-menta-deep",
-  lav: "bg-lavanda text-ink",
-  ciruela: "bg-[#ece5f3] text-ciruela",
-  line: "bg-surface border border-border text-ink-soft",
-  // Mismo par de colores que Alert variant="err" (sección 11), aplicado a
-  // un chip — para estados "negativos" que no son un error de formulario
-  // (ej. producto eliminado en mis-publicaciones).
-  carmin: "bg-[#f6e2e2] text-carmin",
-  // Identidad de marca: "Disponible" / "Verificado"
+  // Atención / disputa activa / pendiente de acción
+  terra: "bg-dorado/15 text-malbec",
+  // Informativo / en curso / etiqueta
+  azul: "bg-malbec-10 text-malbec",
+  // Éxito / completado / disponible / verificado
   verde: "bg-verde/10 text-verde",
-  // Plan destacado: Instagram / Destacado
+  // Plan destacado: Instagram / Destacado (sólido)
   dorado: "bg-dorado text-malbec",
+  // Neutro utilitario
+  line: "bg-surface border border-border text-ink-soft",
+  // Error / cancelado / rechazado / vencido
+  carmin: "bg-[#f6e2e2] text-carmin",
 };
 
 // Chip estático de solo lectura — ver sección 10 de docs/design-system.html.
@@ -34,15 +32,12 @@ export function Chip({ tone = "line", children }: { tone?: ChipTone; children: R
 // oculto de FilterChipGroup) — tienen que quedar escritas literalmente acá
 // para que Tailwind las detecte; no se pueden armar concatenando strings.
 const PEER_CHECKED_CLASSES: Record<ChipTone, string> = {
-  terra: "peer-checked:border-transparent peer-checked:bg-[#f6e3d8] peer-checked:text-terracota-deep",
-  azul: "peer-checked:border-transparent peer-checked:bg-[#e0e5f4] peer-checked:text-azul-deep",
-  menta: "peer-checked:border-transparent peer-checked:bg-[#d9f0e7] peer-checked:text-menta-deep",
-  lav: "peer-checked:border-transparent peer-checked:bg-lavanda peer-checked:text-ink",
-  ciruela: "peer-checked:border-transparent peer-checked:bg-[#ece5f3] peer-checked:text-ciruela",
-  line: "peer-checked:border-ink-soft",
-  carmin: "peer-checked:border-transparent peer-checked:bg-[#f6e2e2] peer-checked:text-carmin",
+  terra: "peer-checked:border-transparent peer-checked:bg-dorado/15 peer-checked:text-malbec",
+  azul: "peer-checked:border-transparent peer-checked:bg-malbec-10 peer-checked:text-malbec",
   verde: "peer-checked:border-transparent peer-checked:bg-verde/10 peer-checked:text-verde",
   dorado: "peer-checked:border-transparent peer-checked:bg-dorado peer-checked:text-malbec",
+  line: "peer-checked:border-ink-soft",
+  carmin: "peer-checked:border-transparent peer-checked:bg-[#f6e2e2] peer-checked:text-carmin",
 };
 
 export type ChipRadioOption = { value: string; label: string; tone?: ChipTone };
@@ -81,7 +76,7 @@ export function ChipRadioGroup({
                 className="peer sr-only"
               />
               <span
-                className={`inline-flex items-center rounded-pill border border-border bg-surface px-3.5 py-1.5 text-[.82rem] font-medium text-ink-soft transition-colors peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-azul-deep peer-focus-visible:outline-offset-2 ${PEER_CHECKED_CLASSES[tone]}`}
+                className={`inline-flex items-center rounded-pill border border-border bg-surface px-3.5 py-1.5 text-[.82rem] font-medium text-ink-soft transition-colors peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-malbec peer-focus-visible:outline-offset-2 ${PEER_CHECKED_CLASSES[tone]}`}
               >
                 {opt.label}
               </span>
@@ -138,7 +133,7 @@ export function FilterChipGroup({
                 className="peer sr-only"
               />
               <span
-                className={`inline-flex items-center rounded-pill border border-border bg-surface px-3.5 py-1.5 text-[.82rem] font-medium text-ink-soft transition-colors peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-azul-deep peer-focus-visible:outline-offset-2 ${PEER_CHECKED_CLASSES[chipTone]}`}
+                className={`inline-flex items-center rounded-pill border border-border bg-surface px-3.5 py-1.5 text-[.82rem] font-medium text-ink-soft transition-colors peer-focus-visible:outline peer-focus-visible:outline-[3px] peer-focus-visible:outline-malbec peer-focus-visible:outline-offset-2 ${PEER_CHECKED_CLASSES[chipTone]}`}
               >
                 {opt.label}
               </span>

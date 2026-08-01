@@ -11,12 +11,12 @@ export const CLASSIFICATION_LABELS: Record<SocialClassification, string> = {
 };
 
 export const CLASSIFICATION_TONES: Record<SocialClassification, ChipTone> = {
-  vendedor_potencial: "menta",
+  vendedor_potencial: "verde",
   comprador_interesado: "azul",
   consulta_general: "terra",
   ruido: "line",
   spam: "carmin",
-  sin_clasificar: "lav",
+  sin_clasificar: "line",
 };
 
 export const CONVERSATION_STATUS_LABELS: Record<SocialConversationStatus, string> = {

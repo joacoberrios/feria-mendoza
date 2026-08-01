@@ -29,7 +29,7 @@ function ResponseWindowBadge({ conversation }: { conversation: SocialConversatio
     const window = getDmWindowStatus(conversation.last_inbound_at);
     if (window.kind === "free") {
       return (
-        <Chip tone="menta">
+        <Chip tone="verde">
           Quedan {Math.max(0, Math.round(window.hoursRemaining))}h para responder gratis
         </Chip>
       );
@@ -46,7 +46,7 @@ function ResponseWindowBadge({ conversation }: { conversation: SocialConversatio
 
   const privateWindow = getCommentPrivateReplyWindow(conversation.last_inbound_at);
   return privateWindow.available ? (
-    <Chip tone="menta">Respuesta privada disponible ({Math.round(privateWindow.hoursRemaining / 24)}d restantes)</Chip>
+    <Chip tone="verde">Respuesta privada disponible ({Math.round(privateWindow.hoursRemaining / 24)}d restantes)</Chip>
   ) : (
     <Chip tone="line">Ventana de respuesta privada vencida — solo respuesta pública</Chip>
   );
@@ -72,7 +72,7 @@ export function InboxCard({ data }: { data: InboxCardData }) {
     <li className="rounded-lg border border-border bg-surface p-4 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-semibold text-ink">{contactLabel}</span>
-        {contact.interaction_count >= 3 && <Chip tone="ciruela">Recurrente</Chip>}
+        {contact.interaction_count >= 3 && <Chip tone="line">Recurrente</Chip>}
         <span className="text-xs text-ink-soft">
           {contact.interaction_count} interacción{contact.interaction_count === 1 ? "" : "es"}
         </span>

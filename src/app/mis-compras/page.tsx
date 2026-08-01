@@ -17,13 +17,13 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
   resolved:  "Resuelto",
 };
 
-const ORDER_STATUS_TONES: Record<string, "terra" | "azul" | "menta" | "line"> = {
+const ORDER_STATUS_TONES: Record<string, "terra" | "azul" | "verde" | "line"> = {
   pending:   "line",
   paid:      "azul",
-  delivered: "menta",
+  delivered: "verde",
   disputed:  "terra",
   refunded:  "line",
-  resolved:  "menta",
+  resolved:  "verde",
 };
 
 const DISPUTE_STATUS_LABELS: Record<string, string> = {

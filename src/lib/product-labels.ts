@@ -10,9 +10,9 @@ export const CONDITION_LABELS: Record<ProductCondition, string> = {
 // Tono de chip/badge por condición — reusado en la tarjeta de producto,
 // el filtro y el detalle, para que signifiquen lo mismo en toda la app.
 export const CONDITION_TONES: Record<ProductCondition, ChipTone> = {
-  nuevo: "menta",
-  como_nuevo: "lav",
-  usado: "ciruela",
+  nuevo: "verde",
+  como_nuevo: "line",
+  usado: "line",
 };
 
 export const STATUS_LABELS: Record<ProductStatus, string> = {
@@ -28,8 +28,8 @@ export const STATUS_LABELS: Record<ProductStatus, string> = {
 export const STATUS_TONES: Record<ProductStatus, ChipTone> = {
   draft: "line",
   pending_payment: "terra",
-  active: "menta",
-  paused: "lav",
+  active: "verde",
+  paused: "terra",
   sold: "azul",
   removed: "carmin",
 };
