@@ -26,11 +26,22 @@ export default async function ProfilePage({
   const mpConnected = await isSellerMpConnected(profile.id);
   const dniAlreadySaved = await hasDniNumber(profile.id);
   const supabase = await createClient();
-  const { data: zones } = await supabase
-    .from("zones")
-    .select("id, name")
-    .eq("active", true)
-    .order("name");
+  const now = new Date().toISOString();
+
+  const [{ data: zones }, { data: creditRows }] = await Promise.all([
+    supabase.from("zones").select("id, name").eq("active", true).order("name"),
+    supabase
+      .from("credit_purchases")
+      .select("credits_remaining")
+      .eq("user_id", profile.id)
+      .gt("credits_remaining", 0)
+      .gt("expires_at", now),
+  ]);
+
+  const totalCredits = (creditRows ?? []).reduce(
+    (sum, r) => sum + (r.credits_remaining as number),
+    0,
+  );
 
   return (
     <main className="mx-auto max-w-sm p-6">
@@ -134,6 +145,30 @@ export default async function ProfilePage({
               </Button>
             </form>
           </>
+        )}
+      </div>
+
+      <div className="mt-6 border-t border-border pt-6">
+        <h2 className="mb-2 font-display text-base font-semibold">Créditos</h2>
+        {totalCredits > 0 ? (
+          <p className="text-sm text-ink-soft">
+            Tenés{" "}
+            <span className="font-semibold text-ink">
+              {totalCredits} crédito{totalCredits !== 1 ? "s" : ""}
+            </span>{" "}
+            disponibles.{" "}
+            <Link href="/creditos" className="text-azul-deep underline">
+              Ver detalle y comprar más
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="text-sm text-ink-soft">
+            No tenés créditos disponibles.{" "}
+            <Link href="/creditos" className="font-semibold text-azul-deep underline">
+              Comprar créditos
+            </Link>
+          </p>
         )}
       </div>
     </main>

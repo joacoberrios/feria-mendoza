@@ -40,6 +40,63 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true }, { status: 200 });
     }
 
+    // ── Rama créditos ────────────────────────────────────────────────────
+    if (payment.external_reference.startsWith("credits:")) {
+      if (payment.status !== "approved") {
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
+
+      // external_reference = "credits:{userId}:{packageId}:{timestamp}"
+      const parts = payment.external_reference.split(":");
+      if (parts.length < 4) {
+        console.error("[mercadopago:webhook] external_reference de créditos malformado:", payment.external_reference);
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
+      const userId = parts[1];
+      const packageId = Number(parts[2]);
+
+      // Idempotencia: mp_payment_id es UNIQUE en credit_purchases.
+      const { data: existing } = await admin
+        .from("credit_purchases")
+        .select("id")
+        .eq("mp_payment_id", String(payment.id))
+        .maybeSingle();
+
+      if (existing) {
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
+
+      const { data: pkg } = await admin
+        .from("credit_packages")
+        .select("id, credits, expiration_days")
+        .eq("id", packageId)
+        .maybeSingle();
+
+      if (!pkg) {
+        console.error("[mercadopago:webhook] paquete de créditos no encontrado:", packageId);
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
+
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + pkg.expiration_days);
+
+      const { error: insertError } = await admin.from("credit_purchases").insert({
+        user_id: userId,
+        package_id: packageId,
+        credits_remaining: pkg.credits,
+        expires_at: expiresAt.toISOString(),
+        mp_payment_id: String(payment.id),
+      });
+
+      if (insertError) {
+        console.error("[mercadopago:webhook] error insertando credit_purchase:", insertError);
+        return NextResponse.json({ error: "internal error" }, { status: 500 });
+      }
+
+      return NextResponse.json({ ok: true }, { status: 200 });
+    }
+    // ── Fin rama créditos ─────────────────────────────────────────────────
+
     const orderId = Number(payment.external_reference);
     const { data: order } = await admin
       .from("orders")

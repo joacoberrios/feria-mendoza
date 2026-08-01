@@ -7,6 +7,8 @@ import { MAX_PRODUCT_PHOTOS, MAX_PRODUCT_PHOTO_SIZE_BYTES } from "@/lib/product-
 import { isSelectableLeaf } from "@/lib/categories";
 
 const ALLOWED_CONDITIONS = ["nuevo", "como_nuevo", "usado"];
+const ALLOWED_MODES = ["commission", "credit"] as const;
+type PublicationMode = (typeof ALLOWED_MODES)[number];
 
 export async function createProduct(formData: FormData) {
   const profile = await getCurrentProfile();
@@ -25,11 +27,13 @@ export async function createProduct(formData: FormData) {
   const zoneId = Number(formData.get("zone_id"));
   const condition = String(formData.get("condition") ?? "");
   const primarySlot = Number(formData.get("primary_slot") ?? "1");
+  const publicationMode = String(formData.get("publication_mode") ?? "commission") as PublicationMode;
 
   if (
     !title ||
     !description ||
     !ALLOWED_CONDITIONS.includes(condition) ||
+    !ALLOWED_MODES.includes(publicationMode) ||
     Number.isNaN(price) ||
     Number.isNaN(categoryId) ||
     Number.isNaN(zoneId)
@@ -57,22 +61,38 @@ export async function createProduct(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Solo hojas activas: un padre (Mujer/Hombre/Kids) o una categoría
-  // desactivada no son válidos aunque alguien fuerce el form.
   if (!(await isSelectableLeaf(supabase, categoryId))) {
     redirect(`/publicar?error=${encodeURIComponent("Elegí una categoría válida")}`);
   }
 
-  // El canal Web/App no cobra por publicar (100% comisión, cobrada recién
-  // en Fase 4 vía split de Mercado Pago al momento de la venta), así que
-  // el producto pasa directo a 'active' y queda asociado al plan de
-  // comisión web.
-  const { data: webPlan } = await supabase
+  // Verificar que el plan elegido está activo.
+  const planType = publicationMode === "credit" ? "credit" : "commission";
+  const { data: plan } = await supabase
     .from("publication_plans")
     .select("id")
     .eq("channel", "web")
+    .eq("type", planType)
     .eq("active", true)
-    .maybeSingle();
+    .maybeSingle<{ id: number }>();
+
+  if (!plan) {
+    redirect(`/publicar?error=${encodeURIComponent("El plan de publicación no está disponible.")}`);
+  }
+
+  // Consumo atómico de crédito (FIFO) si corresponde.
+  let creditPurchaseId: number | null = null;
+  if (publicationMode === "credit") {
+    const { data: consumedId, error: creditError } = await supabase.rpc("consume_one_credit", {
+      p_user_id: profile.id,
+    });
+
+    if (creditError || consumedId == null) {
+      console.error("[publicar:createProduct] error consumiendo crédito:", creditError);
+      redirect(`/publicar?error=${encodeURIComponent("No se pudo consumir el crédito. Verificá tu saldo en /creditos.")}`);
+    }
+
+    creditPurchaseId = consumedId as number;
+  }
 
   const { data: product, error: insertError } = await supabase
     .from("products")
@@ -85,7 +105,8 @@ export async function createProduct(formData: FormData) {
       zone_id: zoneId,
       condition,
       status: "active",
-      plan_id: webPlan?.id ?? null,
+      plan_id: plan.id,
+      credit_purchase_id: creditPurchaseId,
     })
     .select("id")
     .single();
