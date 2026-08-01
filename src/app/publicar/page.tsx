@@ -86,7 +86,7 @@ export default async function PublishProductPage({
 
   return (
     <main className="mx-auto max-w-lg p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">Publicar producto</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">Publicar producto</h1>
       {error && <Alert variant="err">{error}</Alert>}
 
       {neitherActive && (
@@ -160,7 +160,7 @@ export default async function PublishProductPage({
                   name="publication_mode"
                   value="commission"
                   defaultChecked
-                  className="mt-0.5 accent-terracota-deep"
+                  className="mt-0.5 accent-malbec"
                 />
                 <div>
                   <p className="text-sm font-medium text-ink">
@@ -180,13 +180,13 @@ export default async function PublishProductPage({
                   name="publication_mode"
                   value="credit"
                   disabled={availableCredits === 0}
-                  className="mt-0.5 accent-terracota-deep"
+                  className="mt-0.5 accent-malbec"
                 />
                 <div>
                   <p className="text-sm font-medium text-ink">
                     1 crédito — sin comisión
                     {availableCredits > 0 && (
-                      <span className="ml-2 text-xs font-semibold text-menta-deep">
+                      <span className="ml-2 text-xs font-semibold text-verde">
                         {availableCredits} disponible{availableCredits !== 1 ? "s" : ""}
                       </span>
                     )}
@@ -195,7 +195,7 @@ export default async function PublishProductPage({
                     {availableCredits === 0 ? (
                       <>
                         No tenés créditos.{" "}
-                        <Link href="/creditos" className="text-azul-deep underline">
+                        <Link href="/creditos" className="text-malbec underline">
                           Comprá un paquete
                         </Link>
                         .

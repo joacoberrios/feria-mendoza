@@ -13,7 +13,7 @@ export default async function RegisterPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">Crear cuenta</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">Crear cuenta</h1>
       {error && <Alert variant="err">{error}</Alert>}
       <form action={signUp} className="flex flex-col gap-1">
         <TextField name="email" type="email" label="Email" required />
@@ -31,7 +31,7 @@ export default async function RegisterPage({
       </form>
       <p className="mt-4 text-sm text-ink-soft">
         ¿Ya tenés cuenta?{" "}
-        <Link href="/login" className="font-semibold text-azul-deep underline">
+        <Link href="/login" className="font-semibold text-malbec underline">
           Iniciar sesión
         </Link>
       </p>

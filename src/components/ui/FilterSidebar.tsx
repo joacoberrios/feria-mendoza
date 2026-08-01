@@ -93,7 +93,7 @@ export function FilterSidebar({ activeFilterCount, children }: Props) {
         onClick={() => setIsOpen((o) => !o)}
         aria-expanded={isOpen}
         aria-controls="filter-panel"
-        className="mb-4 flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 md:hidden"
+        className="mb-4 flex items-center gap-2 rounded-pill border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2 md:hidden"
       >
         <svg
           viewBox="0 0 16 16"
@@ -109,7 +109,7 @@ export function FilterSidebar({ activeFilterCount, children }: Props) {
         </svg>
         Filtros
         {activeFilterCount > 0 && (
-          <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-terracota-deep px-1 text-[10px] font-semibold leading-none text-white">
+          <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-malbec px-1 text-[10px] font-semibold leading-none text-arena">
             {activeFilterCount}
           </span>
         )}
@@ -144,7 +144,7 @@ export function FilterSidebar({ activeFilterCount, children }: Props) {
               setIsOpen(false);
               triggerRef.current?.focus();
             }}
-            className="rounded-sm p-1 text-ink-soft hover:text-ink focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep"
+            className="rounded-sm p-1 text-ink-soft hover:text-ink focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec"
             aria-label="Cerrar filtros"
           >
             <svg

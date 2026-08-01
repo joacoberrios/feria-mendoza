@@ -16,7 +16,7 @@ export default async function CheckoutExitoPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">¡Pago recibido!</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">¡Pago recibido!</h1>
       <Alert variant="ok">
         Tu pago se procesó correctamente. En unos segundos vas a ver reflejado el cambio de
         estado del producto.

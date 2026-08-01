@@ -12,7 +12,7 @@ export default async function VerifyEmailPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">Revisá tu correo</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">Revisá tu correo</h1>
       <p className="mb-4 text-sm text-ink-soft">
         Te enviamos un link de confirmación{email ? ` a ${email}` : ""}. Tenés que confirmarlo
         antes de poder iniciar sesión.

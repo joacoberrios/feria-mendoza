@@ -103,7 +103,7 @@ export default async function CatalogPage({
 
   return (
     <main className="mx-auto max-w-[1120px] px-6 py-10">
-      <h1 className="mb-6 font-display text-2xl font-semibold">Catálogo</h1>
+      <h1 className="mb-6 font-display text-2xl font-semibold text-malbec">Catálogo</h1>
 
       <form method="get">
         {/* Buscador de texto — siempre visible, fuera del panel */}
@@ -112,7 +112,7 @@ export default async function CatalogPage({
             <TextField label="Buscar" name="q" defaultValue={filters.q ?? ""} />
           </div>
           <div className="mb-[18px]">
-            <ButtonLink href="/productos" variant="ghost" size="sm">
+            <ButtonLink href="/productos" variant="secondary" size="sm">
               Limpiar todo
             </ButtonLink>
           </div>

@@ -146,8 +146,8 @@ export default async function ProductDetailPage({
         <p className="mb-5 text-sm text-ink-soft">Sin fotos</p>
       )}
 
-      <h1 className="font-display text-xl font-semibold text-ink">{product.title}</h1>
-      <p className="mt-1 font-display text-2xl font-bold text-terracota-deep">
+      <h1 className="font-display text-xl font-semibold text-malbec">{product.title}</h1>
+      <p className="mt-1 font-display text-2xl font-bold text-malbec">
         ${product.price.toLocaleString("es-AR")}
       </p>
 
@@ -189,6 +189,9 @@ export default async function ProductDetailPage({
           <form action={createCheckout}>
             <input type="hidden" name="product_id" value={product.id} />
             <Button type="submit">Comprar</Button>
+            <p className="mt-2 text-xs text-ink-soft">
+              Pago seguro con Mercado Pago. El dinero se libera al vendedor cuando confirmás la entrega.
+            </p>
           </form>
         ) : (
           <p className="text-sm text-ink-soft">

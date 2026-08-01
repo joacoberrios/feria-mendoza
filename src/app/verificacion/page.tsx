@@ -34,7 +34,7 @@ export default async function VerificationPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">Verificación de identidad</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">Verificación de identidad</h1>
       {error && <Alert variant="err">{error}</Alert>}
       {uploaded && <Alert variant="ok">Foto subida, queda pendiente de revisión.</Alert>}
 
@@ -85,7 +85,7 @@ export default async function VerificationPage({
       )}
 
       <p className="mt-4 text-sm text-ink-soft">
-        <Link href="/perfil" className="font-semibold text-azul-deep underline">
+        <Link href="/perfil" className="font-semibold text-malbec underline">
           Volver a mi perfil
         </Link>
       </p>

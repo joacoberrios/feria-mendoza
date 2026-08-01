@@ -13,13 +13,13 @@ export default async function LoginPage({
 
   return (
     <main className="mx-auto max-w-sm p-6">
-      <h1 className="mb-4 font-display text-xl font-semibold">Iniciar sesión</h1>
+      <h1 className="mb-4 font-display text-xl font-semibold text-malbec">Iniciar sesión</h1>
       {error && (
         <Alert variant="err">
           <p>{error}</p>
           {error.toLowerCase().includes("confirm") && (
             <p className="mt-1">
-              <Link href="/verify-email" className="font-semibold text-azul-deep underline">
+              <Link href="/verify-email" className="font-semibold text-malbec underline">
                 Reenviar email de confirmación
               </Link>
             </p>
@@ -35,12 +35,12 @@ export default async function LoginPage({
       </form>
       <p className="mt-4 text-sm text-ink-soft">
         ¿No tenés cuenta?{" "}
-        <Link href="/register" className="font-semibold text-azul-deep underline">
+        <Link href="/register" className="font-semibold text-malbec underline">
           Crear cuenta
         </Link>
       </p>
       <p className="mt-2 text-sm text-ink-soft">
-        <Link href="/recuperar-contrasena" className="text-azul-deep underline">
+        <Link href="/recuperar-contrasena" className="text-malbec underline">
           ¿Olvidaste tu contraseña?
         </Link>
       </p>

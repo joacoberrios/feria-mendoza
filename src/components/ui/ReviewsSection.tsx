@@ -46,7 +46,7 @@ export function ReviewsSection({
 
   return (
     <section className="mt-10 border-t border-border pt-8">
-      <h2 className="mb-5 font-display text-lg font-semibold text-ink">
+      <h2 className="mb-5 font-display text-lg font-semibold text-malbec">
         Reseñas del vendedor{reviews.length > 0 && ` (${reviews.length})`}
       </h2>
 
@@ -64,7 +64,7 @@ export function ReviewsSection({
           const isResponding = respondingTo === review.id;
 
           return (
-            <li key={review.id} className="rounded-lg border border-border p-4">
+            <li key={review.id} className="rounded-lg border border-border bg-surface p-4">
               {/* Encabezado: avatar + nombre + estrellas + fecha */}
               <div className="flex items-start gap-3">
                 <Avatar
@@ -181,12 +181,12 @@ export function ReviewsSection({
       {/* Formularios de nueva reseña (una por orden pendiente) */}
       {unreviewedOrders.length > 0 && (
         <div className="mt-8 flex flex-col gap-6">
-          <h3 className="font-display text-base font-semibold text-ink">Dejá tu reseña</h3>
+          <h3 className="font-display text-base font-semibold text-malbec">Dejá tu reseña</h3>
           {unreviewedOrders.map((order) => (
             <form
               key={order.id}
               action={createReview}
-              className="rounded-lg border border-border p-4 flex flex-col gap-3"
+              className="rounded-lg border border-border bg-surface p-4 flex flex-col gap-3"
             >
               <input type="hidden" name="order_id" value={order.id} />
               <input type="hidden" name="seller_id" value={sellerId} />

@@ -10,8 +10,8 @@ type Props = {
 };
 
 const BASE =
-  "rounded-pill border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2 cursor-pointer";
-const ACTIVE = "border-terra-muted bg-terra-subtle text-terracota-deep";
+  "rounded-pill border px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2 cursor-pointer";
+const ACTIVE = "border-dorado bg-dorado/15 text-malbec";
 const INACTIVE = "border-border bg-surface text-ink-soft hover:bg-bg-subtle hover:text-ink";
 
 export function CategoryFilterChips({ tree, defaultCategoryId, defaultSubId }: Props) {
