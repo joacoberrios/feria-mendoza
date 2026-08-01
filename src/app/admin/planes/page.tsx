@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { updatePlan } from "./actions";
 
 const INPUT_CLASS =
-  "mt-1 w-full rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep";
+  "mt-1 w-full rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec";
 
 export default async function AdminPlansPage({
   searchParams,
@@ -105,7 +105,7 @@ export default async function AdminPlansPage({
               </label>
 
               <label className="flex items-center gap-2 text-sm font-medium text-ink">
-                <input type="checkbox" name="active" defaultChecked={plan.active} className="accent-terracota-deep" />
+                <input type="checkbox" name="active" defaultChecked={plan.active} className="accent-malbec" />
                 Activo
               </label>
 

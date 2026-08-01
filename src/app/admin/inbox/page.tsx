@@ -55,7 +55,7 @@ export default async function InboxPage({
           href="/admin/inbox?platform=instagram"
           className={`rounded-pill px-4 py-2 text-sm font-semibold transition-colors ${
             platform === "instagram"
-              ? "bg-terracota-deep text-white"
+              ? "bg-malbec text-arena"
               : "bg-bg-subtle text-ink-soft hover:bg-border"
           }`}
         >

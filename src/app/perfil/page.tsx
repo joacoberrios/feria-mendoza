@@ -117,7 +117,7 @@ export default async function ProfilePage({
         ) : (
           <p className="text-sm text-ink-soft">
             Todavía no verificaste tu identidad.{" "}
-            <Link href="/verificacion" className="font-semibold text-azul-deep underline">
+            <Link href="/verificacion" className="font-semibold text-malbec underline">
               Subir foto de DNI
             </Link>
           </p>
@@ -157,7 +157,7 @@ export default async function ProfilePage({
               {totalCredits} crédito{totalCredits !== 1 ? "s" : ""}
             </span>{" "}
             disponibles.{" "}
-            <Link href="/creditos" className="text-azul-deep underline">
+            <Link href="/creditos" className="text-malbec underline">
               Ver detalle y comprar más
             </Link>
             .
@@ -165,7 +165,7 @@ export default async function ProfilePage({
         ) : (
           <p className="text-sm text-ink-soft">
             No tenés créditos disponibles.{" "}
-            <Link href="/creditos" className="font-semibold text-azul-deep underline">
+            <Link href="/creditos" className="font-semibold text-malbec underline">
               Comprar créditos
             </Link>
           </p>

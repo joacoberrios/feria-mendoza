@@ -79,7 +79,7 @@ export default async function CreditosPage({
       <section className="mb-8">
         <div className="rounded-lg border border-border bg-surface p-5 shadow-sm">
           <p className="text-sm text-ink-soft">Créditos disponibles</p>
-          <p className="mt-1 font-display text-4xl font-bold text-terracota-deep">
+          <p className="mt-1 font-display text-4xl font-bold text-malbec">
             {totalCredits}
           </p>
 
@@ -137,7 +137,7 @@ export default async function CreditosPage({
                     {pkg.credits} crédito{pkg.credits !== 1 ? "s" : ""} · vigencia{" "}
                     {pkg.expiration_days} días
                   </p>
-                  <p className="mt-1 font-display text-xl font-bold text-terracota-deep">
+                  <p className="mt-1 font-display text-xl font-bold text-malbec">
                     ${pkg.price.toLocaleString("es-AR")}
                   </p>
                 </div>

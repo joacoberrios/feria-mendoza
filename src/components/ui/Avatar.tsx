@@ -19,7 +19,7 @@ const SIZE_CLASSES: Record<NonNullable<AvatarProps["size"]>, string> = {
 export function Avatar({ avatarPath, initial, alt, size = "sm" }: AvatarProps) {
   return (
     <div
-      className={`relative flex-none overflow-hidden rounded-full bg-lavanda font-bold text-ink-soft ${SIZE_CLASSES[size]}`}
+      className={`relative flex-none overflow-hidden rounded-full bg-malbec-10 font-bold text-ink-soft ${SIZE_CLASSES[size]}`}
     >
       {avatarPath ? (
         <Image

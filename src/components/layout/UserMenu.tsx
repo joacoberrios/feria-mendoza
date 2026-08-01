@@ -44,7 +44,7 @@ export function UserMenu({ displayName, avatarPath, initial, isAdmin }: Props) {
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Menú de usuario"
-        className="flex items-center gap-2 rounded-pill px-2 py-1.5 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+        className="flex items-center gap-2 rounded-pill px-2 py-1.5 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2"
       >
         <Avatar avatarPath={avatarPath} initial={initial} alt="" size="sm" />
       </button>

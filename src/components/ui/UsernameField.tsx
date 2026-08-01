@@ -121,7 +121,7 @@ export function UsernameField({ name, label, hint, currentUsername }: UsernameFi
                     key={suggestion}
                     type="button"
                     onClick={() => setValue(suggestion)}
-                    className="rounded-pill border border-border bg-bg-subtle px-2 py-0.5 font-medium text-azul-deep hover:bg-border focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+                    className="rounded-pill border border-border bg-bg-subtle px-2 py-0.5 font-medium text-malbec hover:bg-border focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2"
                   >
                     {suggestion}
                   </button>

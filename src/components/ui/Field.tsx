@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 // docs/design-system.html. Un solo lugar para el borde/foco/radio de
 // cualquier control de formulario, así quedan visualmente idénticos.
 export const FIELD_CONTROL_CLASSES =
-  "min-h-11 w-full rounded-md border-[1.5px] bg-white px-3.5 py-3 text-base text-ink placeholder:text-[#a49fac] focus:border-azul-deep focus:shadow-[0_0_0_3px_rgba(62,82,144,.18)] focus:outline-none";
+  "min-h-11 w-full rounded-md border-[1.5px] bg-surface px-3.5 py-3 text-base text-ink placeholder:text-ink-soft focus:border-malbec focus:shadow-[0_0_0_3px_rgba(74,29,63,.12)] focus:outline-none";
 
 export function fieldBorderClass(hasError: boolean) {
   return hasError ? "border-carmin" : "border-border";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { buttonClasses } from "@/components/ui/Button";
 import { ConfirmButton } from "@/components/ui/ConfirmButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { resolveWithoutRefund, resolveWithRefund, retryRefund } from "./actions";
@@ -47,7 +48,7 @@ export function ResolveForm({ disputeId, orderId, amount, status }: Props) {
             ref={retryTriggerRef}
             type="button"
             onClick={openModal}
-            className="inline-flex items-center justify-center gap-2 rounded-pill border-2 border-terracota-deep bg-transparent px-[18px] py-[10px] text-sm font-semibold text-terracota-deep transition-colors hover:bg-terracota-deep/8 focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+            className={buttonClasses("secondary", "sm", "")}
           >
             Reintentar reembolso
           </button>
@@ -82,7 +83,7 @@ export function ResolveForm({ disputeId, orderId, amount, status }: Props) {
       <button
         type="button"
         onClick={() => setExpanded(true)}
-        className="mt-3 text-sm text-azul-deep underline hover:no-underline"
+        className="mt-3 text-sm text-malbec underline hover:no-underline"
       >
         Resolver disputa
       </button>
@@ -101,7 +102,7 @@ export function ResolveForm({ disputeId, orderId, amount, status }: Props) {
             name="resolution_notes"
             rows={3}
             placeholder="Detalle de la resolución..."
-            className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
             form={`resolve-form-${disputeId}`}
           />
         </div>
@@ -115,7 +116,7 @@ export function ResolveForm({ disputeId, orderId, amount, status }: Props) {
               ref={refundTriggerRef}
               type="button"
               onClick={openModal}
-              className="inline-flex items-center justify-center gap-2 rounded-pill bg-carmin px-[18px] py-[10px] text-sm font-semibold text-white shadow-sm transition-[background,box-shadow] hover:bg-[#932e2e] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+              className={buttonClasses("danger", "sm", "")}
             >
               Reembolsar al comprador
             </button>

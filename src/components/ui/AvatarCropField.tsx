@@ -121,7 +121,7 @@ export function AvatarCropField({
           type="file"
           accept="image/*"
           onChange={handlePick}
-          className="block max-w-[220px] text-sm text-ink-soft file:mr-3 file:rounded-pill file:border-0 file:bg-azul file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white file:transition-colors hover:file:bg-azul-deep focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+          className="block max-w-[220px] text-sm text-ink-soft file:mr-3 file:rounded-pill file:border-0 file:bg-malbec file:px-4 file:py-2 file:text-sm file:font-semibold file:text-arena file:transition-colors hover:file:bg-malbec-dark focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2"
         />
       </div>
 

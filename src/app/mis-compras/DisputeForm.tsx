@@ -35,7 +35,7 @@ export function DisputeForm({ orderId }: { orderId: number }) {
         <legend className="sr-only">Motivo de la disputa</legend>
         {REASONS.map((r) => (
           <label key={r.value} className="flex cursor-pointer items-center gap-2 text-sm text-ink">
-            <input type="radio" name="reason" value={r.value} required className="accent-terracota-deep" />
+            <input type="radio" name="reason" value={r.value} required className="accent-malbec" />
             {r.label}
           </label>
         ))}
@@ -50,7 +50,7 @@ export function DisputeForm({ orderId }: { orderId: number }) {
           name="comment"
           rows={3}
           placeholder="Contanos más detalles..."
-          className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+          className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
         />
       </div>
 

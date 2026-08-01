@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { createPackage, updatePackage } from "./actions";
 
 const INPUT_CLASS =
-  "mt-1 w-full rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep";
+  "mt-1 w-full rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec";
 
 type CreditPackage = {
   id: number;
@@ -149,7 +149,7 @@ export default async function AdminCreditosPage({
                   type="checkbox"
                   name="active"
                   defaultChecked={pkg.active}
-                  className="accent-terracota-deep"
+                  className="accent-malbec"
                 />
                 Activo
               </label>

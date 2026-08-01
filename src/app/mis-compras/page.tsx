@@ -141,7 +141,7 @@ export default async function MyPurchasesPage({
 
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-ink truncate">{title}</p>
-                  <p className="mt-0.5 font-display text-base font-bold text-terracota-deep">
+                  <p className="mt-0.5 font-display text-base font-bold text-malbec">
                     ${order.amount.toLocaleString("es-AR")}
                   </p>
                   <p className="mt-0.5 text-xs text-ink-soft">
@@ -177,7 +177,7 @@ export default async function MyPurchasesPage({
                       ) : (
                         <Link
                           href={`/productos/${productId}#resenas`}
-                          className="text-sm font-medium text-azul-deep underline hover:no-underline"
+                          className="text-sm font-medium text-malbec underline hover:no-underline"
                         >
                           Dejar tu opinión
                         </Link>

@@ -14,7 +14,7 @@ const TONE_CLASSES: Record<ChipTone, string> = {
   // Neutro utilitario
   line: "bg-surface border border-border text-ink-soft",
   // Error / cancelado / rechazado / vencido
-  carmin: "bg-[#f6e2e2] text-carmin",
+  carmin: "bg-carmin-subtle text-carmin",
 };
 
 // Chip estático de solo lectura — ver sección 10 de docs/design-system.html.
@@ -37,7 +37,7 @@ const PEER_CHECKED_CLASSES: Record<ChipTone, string> = {
   verde: "peer-checked:border-transparent peer-checked:bg-verde/10 peer-checked:text-verde",
   dorado: "peer-checked:border-transparent peer-checked:bg-dorado peer-checked:text-malbec",
   line: "peer-checked:border-ink-soft",
-  carmin: "peer-checked:border-transparent peer-checked:bg-[#f6e2e2] peer-checked:text-carmin",
+  carmin: "peer-checked:border-transparent peer-checked:bg-carmin-subtle peer-checked:text-carmin",
 };
 
 export type ChipRadioOption = { value: string; label: string; tone?: ChipTone };

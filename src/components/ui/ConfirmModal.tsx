@@ -101,7 +101,7 @@ export function ConfirmModal({
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="rounded-pill border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+            className="rounded-pill border border-border px-4 py-2 text-sm font-medium text-ink-soft hover:bg-bg-subtle focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2"
           >
             Cancelar
           </button>

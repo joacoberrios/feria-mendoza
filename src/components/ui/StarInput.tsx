@@ -27,14 +27,14 @@ export function StarInput({
           onMouseEnter={() => setHovered(i)}
           onMouseLeave={() => setHovered(0)}
           aria-label={`${i} estrella${i > 1 ? "s" : ""}`}
-          className="rounded focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep"
+          className="rounded focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec"
         >
           <svg
             width={28}
             height={28}
             viewBox="0 0 24 24"
-            fill={i <= active ? "#f59e0b" : "none"}
-            stroke={i <= active ? "#f59e0b" : "#d1d5db"}
+            fill={i <= active ? "var(--color-dorado)" : "none"}
+            stroke={i <= active ? "var(--color-dorado)" : "var(--color-border)"}
             strokeWidth="1.5"
             aria-hidden="true"
           >

@@ -24,8 +24,8 @@ export function StarRating({
           width={px}
           height={px}
           viewBox="0 0 24 24"
-          fill={i <= filled ? "#f59e0b" : "none"}
-          stroke={i <= filled ? "#f59e0b" : "#d1d5db"}
+          fill={i <= filled ? "var(--color-dorado)" : "none"}
+          stroke={i <= filled ? "var(--color-dorado)" : "var(--color-border)"}
           strokeWidth="1.5"
           aria-hidden="true"
         >

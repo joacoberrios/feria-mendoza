@@ -131,7 +131,7 @@ export default async function AdminVentasInstagramPage({
                     <input type="hidden" name="sale_id" value={sale.id} />
                     <button
                       type="submit"
-                      className="shrink-0 rounded px-2 py-1 text-xs text-ink-soft hover:bg-bg-subtle hover:text-carmin focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep"
+                      className="shrink-0 rounded px-2 py-1 text-xs text-ink-soft hover:bg-bg-subtle hover:text-carmin focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec"
                     >
                       Eliminar
                     </button>

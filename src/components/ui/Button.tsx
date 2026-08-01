@@ -11,13 +11,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   secondary:
     "border-2 border-dorado bg-transparent text-malbec hover:bg-malbec-10 disabled:border-border disabled:text-ink-soft",
   ghost:
-    "bg-transparent text-terracota-deep border-2 border-terracota-deep hover:bg-terracota-deep/8 disabled:border-border disabled:text-ink-soft disabled:hover:bg-transparent",
-  // No está definida en docs/design-system.html (la sección 06 solo cubre
-  // primary/secondary/ghost) — se suma acá reusando --carmin, que el
-  // design system ya reserva para error/alerta, para acciones
-  // destructivas (ej. "Eliminar" en mis-publicaciones).
+    "bg-transparent text-malbec hover:bg-malbec-10 disabled:text-ink-soft disabled:hover:bg-transparent",
   danger:
-    "bg-carmin text-white shadow-sm hover:bg-[#932e2e] hover:shadow-md disabled:bg-border disabled:text-ink-soft disabled:shadow-none",
+    "bg-carmin text-white shadow-sm hover:bg-carmin-dark hover:shadow-md disabled:bg-border disabled:text-ink-soft disabled:shadow-none",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

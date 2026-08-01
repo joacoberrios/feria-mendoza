@@ -5,16 +5,9 @@
    Ver docs/design-system.html — fuente de verdad visual.
    ============================================================ */
 @theme {
-  /* Marca */
-  --color-terracota: #bc5b2e;
-  --color-terracota-deep: #a84a22;
-  --color-azul: #4e63a8;
-  --color-azul-deep: #3e5290;
-  --color-menta: #4fa98c;
-  --color-menta-deep: #2e7d63;
+  /* Marca — sistema anterior */
   --color-ciruela: #6e4e96;
   --color-carmin: #b23a3a;
-  --color-lavanda: #c4c4dd;
 
   /* Neutros y superficies */
   --color-ink: #1f1b24;
@@ -36,6 +29,8 @@
   --color-arena: #f6f1e8;
   --color-dorado: #e0a63c;
   --color-verde: #3f7d4e;
+  --color-carmin-dark: #932e2e;
+  --color-carmin-subtle: #f6e2e2;
 
   /* Aliases / tokens anteriores (conservados para no romper usos existentes) */
   --color-malbec-deep: #33142c;

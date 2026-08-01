@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { fetchCategoryTree } from "@/lib/categories";
 import { formatFullName } from "@/lib/identity";
+import { ButtonLink } from "@/components/ui/Button";
 import { UserMenu } from "@/components/layout/UserMenu";
 import type { Category } from "@/types/database";
 
@@ -146,12 +147,9 @@ export async function Topbar() {
               >
                 Iniciar sesión
               </Link>
-              <Link
-                href="/register"
-                className="rounded-pill bg-terracota-deep px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#93401d] hover:no-underline"
-              >
+              <ButtonLink href="/register" variant="primary" size="sm">
                 Crear cuenta
-              </Link>
+              </ButtonLink>
             </>
           )}
         </div>

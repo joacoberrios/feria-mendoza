@@ -5,12 +5,10 @@ import { CONDITION_LABELS } from "@/lib/product-labels";
 import { SellerBadge } from "@/components/ui/SellerBadge";
 import type { ProductCondition } from "@/types/database";
 
-// Badges son sólidos (a diferencia de los chips, que son pastel) — ver
-// sección 08 de docs/design-system.html.
 const BADGE_CLASSES: Record<ProductCondition, string> = {
-  nuevo: "bg-menta-deep",
-  como_nuevo: "bg-azul",
-  usado: "bg-ciruela",
+  nuevo: "bg-verde",
+  como_nuevo: "bg-white/80 text-ink",
+  usado: "bg-border text-ink-soft",
 };
 
 export type ProductCardData = {
@@ -25,14 +23,14 @@ export type ProductCardData = {
 };
 
 // Tarjeta de producto — ver sección 08 de docs/design-system.html
-// (patrón .pcard: foto 1:1, hover con elevación, precio en Fredoka).
+// (patrón .pcard: foto 1:1, hover con elevación, precio en Bricolage Grotesque).
 export function ProductCard({ product }: { product: ProductCardData }) {
   return (
     <Link
       href={`/productos/${product.id}`}
-      className="group block overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-1 hover:shadow-lg hover:no-underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-azul-deep focus-visible:outline-offset-2"
+      className="group block overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-1 hover:shadow-lg hover:no-underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-malbec focus-visible:outline-offset-2"
     >
-      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-lavanda to-[#dfe0ee]">
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-arena to-malbec-10">
         {product.photoPath ? (
           <Image
             src={getPublicStorageUrl("product-photos", product.photoPath)}

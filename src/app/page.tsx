@@ -16,7 +16,7 @@ export default async function Home() {
               "conic-gradient(from 20deg, #4E63A8 0 14%, #A84A22 14% 30%, #6E4E96 30% 46%, #B23A3A 46% 60%, #4FA98C 60% 74%, #C4C4DD 74% 88%, #4E63A8 88% 100%)",
           }}
         />
-        <p className="font-mono text-[.78rem] font-semibold tracking-[2px] text-terracota-deep uppercase">
+        <p className="font-mono text-[.78rem] font-semibold tracking-[2px] text-malbec uppercase">
           Marketplace local
         </p>
         <h1 className="relative z-10 mt-3.5 max-w-[16ch] font-display text-3xl leading-tight font-bold sm:text-4xl">

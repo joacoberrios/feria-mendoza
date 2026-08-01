@@ -43,7 +43,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
             type="text"
             required
             placeholder="Ej: María García"
-            className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
           />
         </label>
 
@@ -54,7 +54,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
               name="contact_phone"
               type="text"
               placeholder="Ej: 2616637057"
-              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-ink">
@@ -63,7 +63,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
               name="contact_instagram"
               type="text"
               placeholder="Ej: @usuario"
-              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-ink">
@@ -72,7 +72,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
               name="contact_email"
               type="email"
               placeholder="Ej: mail@ejemplo.com"
-              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
             />
           </label>
         </div>
@@ -85,7 +85,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
               value={selectedPlanId}
               onChange={handlePlanChange}
               required
-              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-azul-deep"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-malbec"
             >
               {plans.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -105,7 +105,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
               required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-azul-deep"
+              className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-malbec"
             />
           </label>
         </div>
@@ -117,7 +117,7 @@ export function SaleForm({ plans }: { plans: Plan[] }) {
             name="notes"
             rows={2}
             placeholder="Ej: pagó en dos cuotas, pago pendiente..."
-            className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep"
+            className="rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-malbec"
           />
         </label>
 

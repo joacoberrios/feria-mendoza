@@ -75,7 +75,7 @@ export default async function MyProductsPage({
               )}
               <div className="flex-1">
                 <p className="font-semibold text-ink">{p.title}</p>
-                <p className="mt-0.5 font-display text-base font-bold text-terracota-deep">
+                <p className="mt-0.5 font-display text-base font-bold text-malbec">
                   ${p.price.toLocaleString("es-AR")}
                 </p>
                 <div className="mt-1.5">

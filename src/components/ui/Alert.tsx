@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 type AlertVariant = "ok" | "err" | "info";
 
 const VARIANT_CLASSES: Record<AlertVariant, string> = {
-  ok: "bg-[#e5f3ee] text-menta-deep border-[#bfe3d5]",
-  err: "bg-[#f6e2e2] text-carmin border-[#e8c2c2]",
-  info: "bg-[#e6eaf6] text-azul-deep border-[#c6d0ec]",
+  ok: "bg-verde/10 text-verde border-verde/20",
+  err: "bg-carmin-subtle text-carmin border-carmin/20",
+  info: "bg-malbec-10 text-malbec border-malbec/15",
 };
 
 // Ver sección 11 de docs/design-system.html — color + ícono + texto,

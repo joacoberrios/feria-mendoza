@@ -53,7 +53,7 @@ export default async function RecuperarContrasenaPage({
       )}
 
       <p className="mt-4 text-sm text-ink-soft">
-        <Link href="/login" className="font-semibold text-azul-deep underline">
+        <Link href="/login" className="font-semibold text-malbec underline">
           Volver al inicio de sesión
         </Link>
       </p>
