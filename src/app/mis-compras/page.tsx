@@ -39,6 +39,7 @@ const REVIEWABLE_STATUSES = new Set(["paid", "delivered", "disputed", "resolved"
 
 type OrderRow = {
   id: number;
+  product_id: number;
   amount: number;
   status: string;
   created_at: string;
@@ -68,7 +69,7 @@ export default async function MyPurchasesPage({
   const { data: orders } = await supabase
     .from("orders")
     .select(
-      `id, amount, status, created_at,
+      `id, product_id, amount, status, created_at,
        product_title, product_photo_path,
        products(id, title, product_photos(storage_path, is_primary)),
        disputes(id, status),
@@ -107,13 +108,14 @@ export default async function MyPurchasesPage({
              order.products?.product_photos?.[0])?.storage_path ??
             null;
 
-          const productId = order.products?.id ?? null;
+          // product_id siempre existe en la orden aunque el producto se haya borrado
+          const productId = order.product_id;
 
           const canDispute =
             (order.status === "paid" || order.status === "delivered") &&
             !order.disputes;
 
-          const canReview = REVIEWABLE_STATUSES.has(order.status) && productId !== null;
+          const canReview = REVIEWABLE_STATUSES.has(order.status);
           const alreadyReviewed = order.reviews !== null;
 
           return (
