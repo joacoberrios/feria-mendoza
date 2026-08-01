@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Fredoka, Inter, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Topbar } from "@/components/layout/Topbar";
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
+const bricolageGrotesque = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const inter = Inter({
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${fredoka.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${bricolageGrotesque.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Topbar />

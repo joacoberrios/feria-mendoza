@@ -29,11 +29,15 @@
   --color-error: #b23a3a;
   --color-info: #4e63a8;
 
-  /* WhatsApp (mockup aprobado, identidad "vino/uva" propia de esa
-     pestaña — el resto de neutros/superficies reusa los tokens de
-     arriba en vez de duplicarlos, el mockup standalone los tenía
-     casi idénticos por separado) */
+  /* Identidad de marca oficial */
   --color-malbec: #4a1d3f;
+  --color-malbec-dark: #2e1027;
+  --color-malbec-10: rgba(74, 29, 63, 0.1);
+  --color-arena: #f6f1e8;
+  --color-dorado: #e0a63c;
+  --color-verde: #3f7d4e;
+
+  /* Aliases / tokens anteriores (conservados para no romper usos existentes) */
   --color-malbec-deep: #33142c;
   --color-uva: #8b3a6f;
   --color-vid: #3f7d4e;
@@ -54,7 +58,7 @@
   --shadow-lg: 0 14px 36px rgba(31, 27, 36, 0.12);
 
   /* Tipografía — variables inyectadas por next/font/google, ver layout.tsx */
-  --font-display: var(--font-fredoka), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
@@ -62,7 +66,7 @@
 /* Una sola identidad (crema/blanco) — sin variante de modo oscuro:
    el sistema de diseño no define una, y --ink solo es texto, nunca fondo. */
 body {
-  background: var(--color-bg);
+  background: var(--color-arena);
   color: var(--color-ink);
   font-family: var(--font-sans);
   line-height: 1.6;
