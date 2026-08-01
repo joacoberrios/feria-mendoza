@@ -115,7 +115,8 @@ export default async function MyPurchasesPage({
             (order.status === "paid" || order.status === "delivered") &&
             !order.disputes;
 
-          const canReview = REVIEWABLE_STATUSES.has(order.status);
+          // Solo mostramos el link si el producto sigue existiendo en la base
+          const canReview = REVIEWABLE_STATUSES.has(order.status) && order.products !== null;
           const alreadyReviewed = order.reviews !== null;
 
           return (
