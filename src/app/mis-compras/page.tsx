@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
@@ -33,17 +34,25 @@ const DISPUTE_STATUS_LABELS: Record<string, string> = {
   refund_failed: "Reembolso en proceso",
 };
 
+// Estados donde tiene sentido dejar (o ya haber dejado) una reseña.
+const REVIEWABLE_STATUSES = new Set(["paid", "delivered", "disputed", "resolved", "refunded"]);
+
 type OrderRow = {
   id: number;
   amount: number;
   status: string;
   created_at: string;
+  // Snapshot guardado al momento de la compra (puede ser null en órdenes históricas)
+  product_title: string | null;
+  product_photo_path: string | null;
+  // Join vivo — fallback para órdenes históricas sin snapshot
   products: {
     id: number;
     title: string;
     product_photos: { storage_path: string; is_primary: boolean }[];
   } | null;
   disputes: { id: number; status: string } | null;
+  reviews: { id: number } | null;
 };
 
 export default async function MyPurchasesPage({
@@ -59,7 +68,11 @@ export default async function MyPurchasesPage({
   const { data: orders } = await supabase
     .from("orders")
     .select(
-      "id, amount, status, created_at, products(id, title, product_photos(storage_path, is_primary)), disputes(id, status)",
+      `id, amount, status, created_at,
+       product_title, product_photo_path,
+       products(id, title, product_photos(storage_path, is_primary)),
+       disputes(id, status),
+       reviews(id)`,
     )
     .eq("buyer_id", profile.id)
     .order("created_at", { ascending: false })
@@ -82,12 +95,26 @@ export default async function MyPurchasesPage({
 
       <ul className="flex flex-col gap-4">
         {orders?.map((order) => {
-          const product = order.products;
-          const primaryPhoto = product?.product_photos?.find((p) => p.is_primary)
-            ?? product?.product_photos?.[0];
+          // Snapshot → fallback a join vivo → fallback a texto genérico
+          const title =
+            order.product_title ??
+            order.products?.title ??
+            "Producto eliminado";
+
+          const photoPath =
+            order.product_photo_path ??
+            (order.products?.product_photos?.find((p) => p.is_primary) ??
+             order.products?.product_photos?.[0])?.storage_path ??
+            null;
+
+          const productId = order.products?.id ?? null;
+
           const canDispute =
             (order.status === "paid" || order.status === "delivered") &&
             !order.disputes;
+
+          const canReview = REVIEWABLE_STATUSES.has(order.status) && productId !== null;
+          const alreadyReviewed = order.reviews !== null;
 
           return (
             <li
@@ -95,13 +122,13 @@ export default async function MyPurchasesPage({
               className="rounded-lg border border-border bg-surface p-4 shadow-sm"
             >
               <div className="flex items-start gap-4">
-                {primaryPhoto ? (
+                {photoPath ? (
                   <Image
-                    src={getPublicStorageUrl("product-photos", primaryPhoto.storage_path)}
-                    alt={product?.title ?? "Producto"}
+                    src={getPublicStorageUrl("product-photos", photoPath)}
+                    alt={title}
                     width={80}
                     height={80}
-                    className="rounded-md border border-border object-cover"
+                    className="rounded-md border border-border object-cover shrink-0"
                   />
                 ) : (
                   <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-md border border-border text-xs text-ink-soft">
@@ -110,9 +137,7 @@ export default async function MyPurchasesPage({
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-ink truncate">
-                    {product?.title ?? "Producto eliminado"}
-                  </p>
+                  <p className="font-semibold text-ink truncate">{title}</p>
                   <p className="mt-0.5 font-display text-base font-bold text-terracota-deep">
                     ${order.amount.toLocaleString("es-AR")}
                   </p>
@@ -135,12 +160,26 @@ export default async function MyPurchasesPage({
                     )}
                   </div>
 
-                  {/* Mensaje al comprador cuando el reembolso está en proceso
-                      (puede estar fallido internamente, pero nunca le mostramos eso) */}
                   {order.disputes?.status === "refund_failed" && (
                     <p className="mt-2 text-xs text-ink-soft">
                       Tu reembolso está siendo procesado. Te vamos a avisar en cuanto se acredite.
                     </p>
+                  )}
+
+                  {/* Reseña */}
+                  {canReview && (
+                    <div className="mt-3">
+                      {alreadyReviewed ? (
+                        <p className="text-xs text-ink-soft">Ya dejaste tu opinión.</p>
+                      ) : (
+                        <Link
+                          href={`/productos/${productId}#resenas`}
+                          className="text-sm font-medium text-azul-deep underline hover:no-underline"
+                        >
+                          Dejar tu opinión
+                        </Link>
+                      )}
+                    </div>
                   )}
 
                   {canDispute && <DisputeForm orderId={order.id} />}

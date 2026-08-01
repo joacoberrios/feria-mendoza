@@ -21,7 +21,7 @@ export async function createCheckout(formData: FormData) {
 
   const { data: product } = await supabase
     .from("products")
-    .select("id, title, price, seller_id, status, plan_id, publication_plans(commission_percentage)")
+    .select("id, title, price, seller_id, status, plan_id, publication_plans(commission_percentage), product_photos(storage_path, is_primary)")
     .eq("id", productId)
     .eq("status", "active")
     .maybeSingle<{
@@ -32,6 +32,7 @@ export async function createCheckout(formData: FormData) {
       status: string;
       plan_id: number | null;
       publication_plans: { commission_percentage: number | null } | null;
+      product_photos: { storage_path: string; is_primary: boolean }[];
     }>();
 
   if (!product) {
@@ -53,6 +54,9 @@ export async function createCheckout(formData: FormData) {
     product.publication_plans?.commission_percentage ?? DEFAULT_COMMISSION_PERCENTAGE;
   const commissionAmount = Math.round(product.price * (commissionPercentage / 100) * 100) / 100;
 
+  const primaryPhoto =
+    product.product_photos?.find((p) => p.is_primary) ?? product.product_photos?.[0];
+
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -62,6 +66,8 @@ export async function createCheckout(formData: FormData) {
       amount: product.price,
       commission_amount: commissionAmount,
       status: "pending",
+      product_title: product.title,
+      product_photo_path: primaryPhoto?.storage_path ?? null,
     })
     .select("id")
     .single();
