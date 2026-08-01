@@ -42,7 +42,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-xs text-[#8b86a3]">
+          <div className="flex h-full items-center justify-center text-xs text-ink-soft">
             Sin foto
           </div>
         )}
@@ -54,7 +54,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </div>
       <div className="p-3.5">
         <p className="truncate text-[.98rem] font-semibold text-ink">{product.title}</p>
-        <p className="mt-0.5 font-display text-lg font-bold text-terracota-deep">
+        <p className="mt-0.5 font-display text-lg font-bold text-malbec">
           ${product.price.toLocaleString("es-AR")}
         </p>
         {product.zoneName && <p className="mt-0.5 text-xs text-ink-soft">{product.zoneName}</p>}

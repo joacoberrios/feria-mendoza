@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type ChipTone = "terra" | "azul" | "menta" | "lav" | "ciruela" | "line" | "carmin";
+export type ChipTone = "terra" | "azul" | "menta" | "lav" | "ciruela" | "line" | "carmin" | "verde" | "dorado";
 
 const TONE_CLASSES: Record<ChipTone, string> = {
   terra: "bg-[#f6e3d8] text-terracota-deep",
@@ -13,6 +13,10 @@ const TONE_CLASSES: Record<ChipTone, string> = {
   // un chip — para estados "negativos" que no son un error de formulario
   // (ej. producto eliminado en mis-publicaciones).
   carmin: "bg-[#f6e2e2] text-carmin",
+  // Identidad de marca: "Disponible" / "Verificado"
+  verde: "bg-verde/10 text-verde",
+  // Plan destacado: Instagram / Destacado
+  dorado: "bg-dorado text-malbec",
 };
 
 // Chip estático de solo lectura — ver sección 10 de docs/design-system.html.
@@ -37,6 +41,8 @@ const PEER_CHECKED_CLASSES: Record<ChipTone, string> = {
   ciruela: "peer-checked:border-transparent peer-checked:bg-[#ece5f3] peer-checked:text-ciruela",
   line: "peer-checked:border-ink-soft",
   carmin: "peer-checked:border-transparent peer-checked:bg-[#f6e2e2] peer-checked:text-carmin",
+  verde: "peer-checked:border-transparent peer-checked:bg-verde/10 peer-checked:text-verde",
+  dorado: "peer-checked:border-transparent peer-checked:bg-dorado peer-checked:text-malbec",
 };
 
 export type ChipRadioOption = { value: string; label: string; tone?: ChipTone };
