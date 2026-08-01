@@ -2,7 +2,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import type { PublicationPlan } from "@/types/database";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
 import { updatePlan } from "./actions";
+
+const INPUT_CLASS =
+  "mt-1 w-full rounded-md border border-border bg-bg-subtle px-3 py-2 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-azul-deep";
 
 export default async function AdminPlansPage({
   searchParams,
@@ -24,20 +29,23 @@ export default async function AdminPlansPage({
 
   return (
     <main className="mx-auto max-w-2xl p-6">
-      <h1 className="text-xl font-semibold mb-6">Planes de publicación</h1>
-      {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-      {saved && <p className="mb-4 text-sm text-green-600">Plan actualizado.</p>}
+      <h1 className="mb-6 font-display text-xl font-semibold">Planes de publicación</h1>
 
-      <ul className="flex flex-col gap-6">
+      {error && <Alert variant="err">{decodeURIComponent(error)}</Alert>}
+      {saved && <Alert variant="ok">Plan actualizado.</Alert>}
+
+      <ul className="flex flex-col gap-6 mt-2">
         {plans?.map((plan) => (
-          <li key={plan.id} className="border rounded p-4">
-            <p className="font-medium mb-1">{plan.name}</p>
-            <p className="text-xs text-gray-500 mb-3">
+          <li key={plan.id} className="rounded-lg border border-border bg-surface p-5 shadow-sm">
+            <p className="font-semibold text-ink">{plan.name}</p>
+            <p className="text-xs text-ink-soft mt-0.5 mb-4">
               Canal: {plan.channel} — Tipo: {plan.type}
             </p>
-            <form action={updatePlan} className="flex flex-col gap-3">
+
+            <form action={updatePlan} className="flex flex-col gap-4">
               <input type="hidden" name="plan_id" value={plan.id} />
-              <label className="text-sm">
+
+              <label className="flex flex-col text-sm font-medium text-ink">
                 Precio
                 <input
                   name="price"
@@ -45,40 +53,45 @@ export default async function AdminPlansPage({
                   min="0"
                   step="0.01"
                   defaultValue={plan.price ?? ""}
-                  className="mt-1 w-full border rounded px-3 py-2"
+                  className={INPUT_CLASS}
                 />
               </label>
-              <label className="text-sm">
+
+              <label className="flex flex-col text-sm font-medium text-ink">
                 Duración (días)
                 <input
                   name="duration_days"
                   type="number"
                   min="0"
                   defaultValue={plan.duration_days ?? ""}
-                  className="mt-1 w-full border rounded px-3 py-2"
+                  className={INPUT_CLASS}
                 />
               </label>
-              <label className="text-sm">
-                Máximo de publicaciones activas (vacío = sin límite)
+
+              <label className="flex flex-col text-sm font-medium text-ink">
+                Máximo de publicaciones activas{" "}
+                <span className="font-normal text-ink-soft">(vacío = sin límite)</span>
                 <input
                   name="max_active_listings"
                   type="number"
                   min="0"
                   defaultValue={plan.max_active_listings ?? ""}
-                  className="mt-1 w-full border rounded px-3 py-2"
+                  className={INPUT_CLASS}
                 />
               </label>
-              <label className="text-sm">
+
+              <label className="flex flex-col text-sm font-medium text-ink">
                 Máximo de fotos
                 <input
                   name="max_photos"
                   type="number"
                   min="0"
                   defaultValue={plan.max_photos ?? ""}
-                  className="mt-1 w-full border rounded px-3 py-2"
+                  className={INPUT_CLASS}
                 />
               </label>
-              <label className="text-sm">
+
+              <label className="flex flex-col text-sm font-medium text-ink">
                 Comisión (%)
                 <input
                   name="commission_percentage"
@@ -87,16 +100,18 @@ export default async function AdminPlansPage({
                   max="100"
                   step="0.01"
                   defaultValue={plan.commission_percentage ?? ""}
-                  className="mt-1 w-full border rounded px-3 py-2"
+                  className={INPUT_CLASS}
                 />
               </label>
-              <label className="text-sm flex items-center gap-2">
-                <input type="checkbox" name="active" defaultChecked={plan.active} />
+
+              <label className="flex items-center gap-2 text-sm font-medium text-ink">
+                <input type="checkbox" name="active" defaultChecked={plan.active} className="accent-terracota-deep" />
                 Activo
               </label>
-              <button type="submit" className="bg-black text-white rounded px-3 py-2">
+
+              <Button type="submit" className="self-start">
                 Guardar
-              </button>
+              </Button>
             </form>
           </li>
         ))}

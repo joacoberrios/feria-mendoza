@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { formatFullName, formatCalendarDateEs } from "@/lib/identity";
 import { getDniNumbersByUserId } from "@/lib/supabase/dni-number";
+import { Button } from "@/components/ui/Button";
 import { approveUser, rejectUser } from "./actions";
 
 export default async function AdminVerificationsPage() {
@@ -19,9 +20,6 @@ export default async function AdminVerificationsPage() {
     .eq("verification_status", "pending")
     .order("created_at");
 
-  // dni_number tiene el SELECT revocado para authenticated (0018) — el
-  // panel de admin es uno de los dos únicos lugares que lo lee, y lo hace
-  // aparte, con el cliente admin.
   const dniNumberById = await getDniNumbersByUserId((pending ?? []).map((u) => u.id));
 
   const rows = await Promise.all(
@@ -39,53 +37,53 @@ export default async function AdminVerificationsPage() {
 
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <h1 className="text-xl font-semibold mb-6">Verificaciones pendientes</h1>
-      {rows.length === 0 && <p className="text-sm">No hay verificaciones pendientes.</p>}
+      <h1 className="mb-6 font-display text-xl font-semibold">Verificaciones pendientes</h1>
+
+      {rows.length === 0 && (
+        <p className="text-sm text-ink-soft">No hay verificaciones pendientes.</p>
+      )}
+
       <ul className="flex flex-col gap-6">
         {rows.map((u) => (
-          <li key={u.id} className="border rounded p-4 flex gap-4 items-start">
+          <li
+            key={u.id}
+            className="flex gap-4 items-start rounded-lg border border-border bg-surface p-5 shadow-sm"
+          >
             {u.photoUrl ? (
               <Image
                 src={u.photoUrl}
                 alt={`Foto de DNI de ${formatFullName(u) || u.email}`}
                 width={160}
                 height={112}
-                className="rounded border object-cover"
+                className="rounded-md border border-border object-cover shrink-0"
               />
             ) : (
-              <div className="w-40 h-28 flex items-center justify-center text-xs text-gray-500 border rounded">
+              <div className="w-40 h-28 shrink-0 flex items-center justify-center rounded-md border border-border text-xs text-ink-soft">
                 Sin foto
               </div>
             )}
-            <div className="flex-1">
-              <p className="font-medium">{formatFullName(u) || "(sin nombre)"}</p>
-              <p className="text-sm text-gray-600">{u.email}</p>
-              <p className="text-sm text-gray-600">{u.phone ?? "-"}</p>
-              <p className="text-sm text-gray-600">
+
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-ink">{formatFullName(u) || "(sin nombre)"}</p>
+              <p className="text-sm text-ink-soft mt-0.5">{u.email}</p>
+              <p className="text-sm text-ink-soft">{u.phone ?? "—"}</p>
+              <p className="text-sm text-ink-soft">
                 DNI: {u.dniNumber ?? "no cargado"}
-                {/* birth_date es solo fecha calendario ("YYYY-MM-DD") — parsearlo con
-                    `new Date()` lo interpreta como UTC y en Argentina (UTC-3) puede
-                    mostrar un día antes. */}
                 {u.birth_date && ` · Nacimiento: ${formatCalendarDateEs(u.birth_date)}`}
               </p>
-              <div className="mt-3 flex gap-2">
+
+              <div className="mt-4 flex gap-2">
                 <form action={approveUser}>
                   <input type="hidden" name="user_id" value={u.id} />
-                  <button
-                    type="submit"
-                    className="bg-green-600 text-white rounded px-3 py-1 text-sm"
-                  >
+                  <Button type="submit" size="sm">
                     Aprobar
-                  </button>
+                  </Button>
                 </form>
                 <form action={rejectUser}>
                   <input type="hidden" name="user_id" value={u.id} />
-                  <button
-                    type="submit"
-                    className="bg-red-600 text-white rounded px-3 py-1 text-sm"
-                  >
+                  <Button type="submit" variant="ghost" size="sm">
                     Rechazar
-                  </button>
+                  </Button>
                 </form>
               </div>
             </div>
