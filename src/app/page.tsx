@@ -1,9 +1,30 @@
 import { getCurrentProfile } from "@/lib/supabase/profile";
 import { formatFullName } from "@/lib/identity";
+import { createClient } from "@/lib/supabase/server";
 import { ButtonLink } from "@/components/ui/Button";
+import { ProductCard } from "@/components/ui/ProductCard";
+import type { ProductCondition, SellerPublicProfile } from "@/types/database";
+
+type OfferRow = {
+  id: number;
+  title: string;
+  price: number;
+  original_price: number;
+  condition: ProductCondition;
+  zone_id: number;
+  seller_id: string;
+  product_photos: { storage_path: string; is_primary: boolean }[];
+  zones: { name: string } | null;
+};
+
+const OFFERS_LIMIT = 8;
 
 export default async function Home() {
-  const profile = await getCurrentProfile();
+  const supabase = await createClient();
+  const [profile, { data: zones }] = await Promise.all([
+    getCurrentProfile(),
+    supabase.from("zones").select("id, name").eq("active", true),
+  ]);
 
   return (
     <main className="mx-auto max-w-[1120px] px-6 py-10">
@@ -42,6 +63,68 @@ export default async function Home() {
           )}
         </div>
       </section>
+
+      <OfferSection supabase={supabase} zoneNameById={new Map((zones ?? []).map((z) => [z.id, z.name]))} />
     </main>
+  );
+}
+
+async function OfferSection({
+  supabase,
+  zoneNameById,
+}: {
+  supabase: Awaited<ReturnType<typeof createClient>>;
+  zoneNameById: Map<number, string>;
+}) {
+  const { data: rawOffers } = await supabase
+    .from("products")
+    .select("id, title, price, original_price, condition, zone_id, seller_id, product_photos(storage_path, is_primary), zones(name)")
+    .eq("status", "active")
+    .not("original_price", "is", null)
+    .returns<OfferRow[]>();
+
+  const offers = (rawOffers ?? [])
+    .filter((p) => p.original_price > p.price)
+    .sort((a, b) => (1 - b.price / b.original_price) - (1 - a.price / a.original_price))
+    .slice(0, OFFERS_LIMIT);
+
+  if (offers.length === 0) return null;
+
+  const sellerIds = [...new Set(offers.map((p) => p.seller_id))];
+  const { data: sellerProfiles } = await supabase
+    .from("seller_public_profiles")
+    .select("id, username, avatar_url")
+    .in("id", sellerIds)
+    .returns<SellerPublicProfile[]>();
+  const sellerById = new Map((sellerProfiles ?? []).map((s) => [s.id, s]));
+
+  return (
+    <section className="mt-10">
+      <h2 className="mb-1 font-display text-2xl font-bold text-malbec">🤫 Mansas Ofertas</h2>
+      <p className="mb-6 text-sm text-ink-soft">Los mejores descuentos del momento.</p>
+      <ul className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+        {offers.map((p) => {
+          const primaryPhoto = p.product_photos.find((ph) => ph.is_primary) ?? p.product_photos[0];
+          const seller = sellerById.get(p.seller_id);
+          return (
+            <li key={p.id}>
+              <ProductCard
+                product={{
+                  id: p.id,
+                  title: p.title,
+                  price: p.price,
+                  originalPrice: p.original_price,
+                  condition: p.condition,
+                  zoneName: zoneNameById.get(p.zone_id) ?? p.zones?.name ?? null,
+                  photoPath: primaryPhoto?.storage_path ?? null,
+                  sellerUsername: seller?.username ?? null,
+                  sellerAvatarPath: seller?.avatar_url ?? null,
+                }}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

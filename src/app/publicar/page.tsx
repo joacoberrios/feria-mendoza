@@ -109,6 +109,14 @@ export default async function PublishProductPage({
         <TextField name="title" label="Título" required />
         <Textarea name="description" label="Descripción" rows={4} required />
         <TextField name="price" type="number" label="Precio" min="0" step="0.01" required />
+        <TextField
+          name="original_price"
+          type="number"
+          label="Precio anterior (opcional)"
+          hint="Si estás haciendo un descuento, ingresá el precio de lista. Tiene que ser mayor al precio actual — el producto va a aparecer en «Mansas Ofertas»."
+          min="0"
+          step="0.01"
+        />
         <CategorySelect tree={categoryTree} />
         <Select name="zone_id" label="Zona" defaultValue="" required>
           <option value="" disabled>

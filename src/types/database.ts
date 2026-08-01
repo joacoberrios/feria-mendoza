@@ -67,6 +67,7 @@ export type Product = {
   title: string;
   description: string;
   price: number;
+  original_price: number | null;
   category_id: number;
   zone_id: number;
   condition: ProductCondition;

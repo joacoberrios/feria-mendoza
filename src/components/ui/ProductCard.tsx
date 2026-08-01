@@ -15,6 +15,7 @@ export type ProductCardData = {
   id: number;
   title: string;
   price: number;
+  originalPrice?: number | null;
   condition: ProductCondition;
   zoneName?: string | null;
   photoPath: string | null;
@@ -49,12 +50,24 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         >
           {CONDITION_LABELS[product.condition]}
         </span>
+        {product.originalPrice && product.originalPrice > product.price && (
+          <span className="absolute top-2.5 right-2.5 rounded-pill bg-dorado px-2.5 py-1 text-[.66rem] font-bold tracking-wide text-malbec uppercase">
+            {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+          </span>
+        )}
       </div>
       <div className="p-3.5">
         <p className="truncate text-[.98rem] font-semibold text-ink">{product.title}</p>
-        <p className="mt-0.5 font-display text-lg font-bold text-malbec">
-          ${product.price.toLocaleString("es-AR")}
-        </p>
+        <div className="mt-0.5 flex items-baseline gap-2">
+          <p className="font-display text-lg font-bold text-malbec">
+            ${product.price.toLocaleString("es-AR")}
+          </p>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <p className="text-sm text-ink-soft line-through">
+              ${product.originalPrice.toLocaleString("es-AR")}
+            </p>
+          )}
+        </div>
         {product.zoneName && <p className="mt-0.5 text-xs text-ink-soft">{product.zoneName}</p>}
         <div className="mt-2">
           <SellerBadge

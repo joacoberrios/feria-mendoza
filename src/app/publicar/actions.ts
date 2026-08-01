@@ -23,6 +23,8 @@ export async function createProduct(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const price = Number(formData.get("price"));
+  const originalPriceRaw = String(formData.get("original_price") ?? "").trim();
+  const originalPrice = originalPriceRaw !== "" ? Number(originalPriceRaw) : null;
   const categoryId = Number(formData.get("category_id"));
   const zoneId = Number(formData.get("zone_id"));
   const condition = String(formData.get("condition") ?? "");
@@ -39,6 +41,10 @@ export async function createProduct(formData: FormData) {
     Number.isNaN(zoneId)
   ) {
     redirect(`/publicar?error=${encodeURIComponent("Completá todos los campos requeridos")}`);
+  }
+
+  if (originalPrice !== null && (Number.isNaN(originalPrice) || originalPrice <= price)) {
+    redirect(`/publicar?error=${encodeURIComponent("El precio anterior debe ser mayor al precio actual")}`);
   }
 
   const slotFiles: { slot: number; file: File }[] = [];
@@ -101,6 +107,7 @@ export async function createProduct(formData: FormData) {
       title,
       description,
       price,
+      original_price: originalPrice,
       category_id: categoryId,
       zone_id: zoneId,
       condition,

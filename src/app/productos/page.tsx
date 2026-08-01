@@ -13,6 +13,7 @@ type CatalogRow = {
   id: number;
   title: string;
   price: number;
+  original_price: number | null;
   zone_id: number;
   condition: ProductCondition;
   seller_id: string;
@@ -48,7 +49,7 @@ export default async function CatalogPage({
 
   let query = supabase
     .from("products")
-    .select("id, title, price, zone_id, condition, seller_id, product_photos(storage_path, is_primary)")
+    .select("id, title, price, original_price, zone_id, condition, seller_id, product_photos(storage_path, is_primary)")
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
@@ -188,6 +189,7 @@ export default async function CatalogPage({
                         id: p.id,
                         title: p.title,
                         price: p.price,
+                        originalPrice: p.original_price,
                         condition: p.condition,
                         zoneName: zoneNameById.get(p.zone_id),
                         photoPath: primaryPhoto?.storage_path ?? null,

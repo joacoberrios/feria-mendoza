@@ -71,6 +71,15 @@ export default async function EditProductPage({
           defaultValue={product.price}
           required
         />
+        <TextField
+          name="original_price"
+          type="number"
+          label="Precio anterior (opcional)"
+          hint="Dejalo vacío para quitar la oferta. Si bajás el precio y este campo está vacío, se completa automáticamente con el precio anterior."
+          min="0"
+          step="0.01"
+          defaultValue={product.original_price ?? ""}
+        />
         <CategorySelect tree={categoryTree} defaultCategoryId={product.category_id} />
         <Select name="zone_id" label="Zona" defaultValue={product.zone_id} required>
           {zones?.map((z) => (
