@@ -4,6 +4,7 @@ import { fetchCategoryTree } from "@/lib/categories";
 import { FilterChipGroup } from "@/components/ui/Chip";
 import { FilterSidebar } from "@/components/ui/FilterSidebar";
 import { CategoryFilterChips } from "@/components/ui/CategoryFilterChips";
+import { CategoryStrip } from "@/components/ui/CategoryStrip";
 import { TextField } from "@/components/ui/TextField";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ProductCard } from "@/components/ui/ProductCard";
@@ -31,6 +32,7 @@ export default async function CatalogPage({
     price_min?: string;
     price_max?: string;
     q?: string;
+    ofertas?: string;
   }>;
 }) {
   const filters = await searchParams;
@@ -41,7 +43,8 @@ export default async function CatalogPage({
     supabase.from("zones").select("id, name").eq("active", true).order("name"),
   ]);
 
-  const topId = filters.category_id ? Number(filters.category_id) : null;
+  const isOffer = filters.ofertas === "1";
+  const topId = !isOffer && filters.category_id ? Number(filters.category_id) : null;
   const subId = filters.sub_id ? Number(filters.sub_id) : null;
   const selectedParent = topId ? categoryTree.parents.find((p) => p.id === topId) : undefined;
   const effectiveSubId =
@@ -67,6 +70,7 @@ export default async function CatalogPage({
   if (filters.condition) query = query.eq("condition", filters.condition);
   if (filters.price_min) query = query.gte("price", Number(filters.price_min));
   if (filters.price_max) query = query.lte("price", Number(filters.price_max));
+  if (isOffer) query = query.not("original_price", "is", null);
   if (filters.q) {
     const safeText = filters.q.replace(/[,()]/g, " ").trim();
     if (safeText) {
@@ -74,7 +78,12 @@ export default async function CatalogPage({
     }
   }
 
-  const { data: products } = await query.returns<CatalogRow[]>();
+  const { data: rawProducts } = await query.returns<CatalogRow[]>();
+  const products = isOffer
+    ? (rawProducts ?? []).filter(
+        (p) => p.original_price !== null && p.original_price > p.price,
+      )
+    : (rawProducts ?? []);
   const zoneNameById = new Map((zones ?? []).map((z) => [z.id, z.name]));
 
   const sellerIds = Array.from(new Set((products ?? []).map((p) => p.seller_id)));
@@ -103,7 +112,7 @@ export default async function CatalogPage({
   ].filter(Boolean).length;
 
   return (
-    <main className="mx-auto max-w-[1120px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[1120px] px-6 py-10">
       <h1 className="mb-6 font-display text-2xl font-semibold text-malbec">Catálogo</h1>
 
       <form method="get">
@@ -118,6 +127,8 @@ export default async function CatalogPage({
             </ButtonLink>
           </div>
         </div>
+
+        <CategoryStrip tree={categoryTree} activeCategoryId={topId} isOffer={isOffer} />
 
         <div className="md:flex md:items-start md:gap-8">
           {/* Panel lateral de filtros */}

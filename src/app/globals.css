@@ -61,6 +61,7 @@
 /* Una sola identidad (crema/blanco) — sin variante de modo oscuro:
    el sistema de diseño no define una, y --ink solo es texto, nunca fondo. */
 body {
+  overflow-x: hidden;
   background: var(--color-arena);
   color: var(--color-ink);
   font-family: var(--font-sans);
